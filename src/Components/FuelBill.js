@@ -19,6 +19,45 @@ export default class FuelBill extends Component {
       number_of_bills: "1",
       petrol_rate: "94.8",
       month: "2024-04",
+  "fuel_stations": [
+    {
+      "logo": process.env.PUBLIC_URL + "/images/indian-oil.png",
+      "organisation": "IndianOil / IOCL",
+      "addresses": [
+        "Janta Filling Station – Sikanderpur, near Le Meridien, Sector 26",
+        "NH 8, Sector 15 Part 1",
+        "Khandelwal Oil Company – Opposite Ansal Plaza, Sector 1 Palam Vihar",
+        "Shaheed Ramphal Kajla Filling Station – Sector 29"
+      ]
+    },
+    {
+      "logo": process.env.PUBLIC_URL + "/images/bharat-petroleum.png",
+      "organisation": "Bharat Petroleum BPCL",
+      "addresses": [
+        "DLF Phase 5, Sector 43",
+        "Opp Gold Sukh Mall, Sector 44",
+        "Netaji Subhash Marg, Sector 47",
+        "Delhi–Jaipur Expy, Sector 30",
+        "Masani Village – LT Atul Kataria Marg, Sector 6",
+        "Karamveer Filling Station – Rly Stn Rd, Opp Apna Encl, Gurugram",
+        "Jawala Service Station – Delhi–Jaipur Expy, Sector 31"
+      ]
+    },
+    {
+      "logo": process.env.PUBLIC_URL + "/images/hp-oil.png",
+      "organisation": "Hindustan Petroleum (HP)",
+      "addresses": [
+        "Mehrauli-Gurgaon Rd, Sector 17",
+        "Sector 25 – Near Metro, DLF Phase 1",
+        "Station Road, Sector 5",
+        "Hira Fuels – Opp Jalvayu Towers, Sector 53",
+        "HP (Sector 12A) – Sector 12",
+        "Auto Care Centre – Near Tau Devi Lal Park, Sector 23A",
+        "Subhash Chowk, Sector 48"
+      ]
+    }
+  ]
+
     };
   }
 
@@ -32,6 +71,15 @@ export default class FuelBill extends Component {
 
   _generateRandomNumber = (from_num, to_num) => {
     return from_num + Math.round(Math.random() * (to_num - from_num));
+  };
+
+  _getRandomFuelStation = () => {
+    const { fuel_stations } = this.state;
+    return fuel_stations[Math.floor(Math.random() * fuel_stations.length)];
+  };
+
+  _getRandomAddress = (addresses) => {
+    return addresses[Math.floor(Math.random() * addresses.length)];
   };
 
   _getTime = () => {
@@ -88,11 +136,13 @@ export default class FuelBill extends Component {
     let fuel_data_length = fuel_data.length;
     let skip_factor = parseInt((fuel_data_length - 1) / (total_number_of_bills - 1));
     let amount_arr = this._generateAmountArray(total_number_of_bills);
-    let receipt_no = 2102709341; // starting txn number
+    let receipt_no = 4102709341; // starting txn number
     for (let i = 0; i < total_number_of_bills; i++) {
       let fuel_value = fuel_data[skip_factor * i];
       let times_obj = this._getTime();
-      let txn_id = this._generateRandomNumber(receipt_no + 10000, receipt_no + 1000000);
+      let txn_id = this._generateRandomNumber(receipt_no + 10000, receipt_no + 100000000);
+      let fuel_station = this._getRandomFuelStation();
+      let fuel_address = this._getRandomAddress(fuel_station.addresses);
       bills.push({
         amount: amount_arr[i].toFixed(2),
         date: new Date(fuel_value.date),
@@ -107,6 +157,9 @@ export default class FuelBill extends Component {
         hdfc_no: `D ${fuel_value.date.split("-")[1]}/${fuel_value.date.split("-")[0]}`,
         txnSt: times_obj.txnSt,
         txnEnd: times_obj.txnEnd,
+        fuel_station_logo: fuel_station.logo,
+        fuel_station_name: fuel_station.organisation,
+        fuel_station_address: fuel_address,
       });
       sum_amount += amount_arr[i];
       sum_ltrs += parseFloat(amount_arr[i] / fuel_value.rate);
@@ -153,6 +206,8 @@ export default class FuelBill extends Component {
       let fuel_value = { date: new Date(new Date(month).getTime() + i * skip_factor * 60 * 60 * 24 * 1000).toISOString().split("T")[0], rate: petrol_rate };
       let times_obj = this._getTime();
       let txn_id = this._generateRandomNumber(receipt_no + 10000, receipt_no + 1000000);
+      let fuel_station = this._getRandomFuelStation();
+      let fuel_address = this._getRandomAddress(fuel_station.addresses);
       bills.push({
         amount: amount_arr[i].toFixed(2),
         date: new Date(fuel_value.date),
@@ -167,6 +222,9 @@ export default class FuelBill extends Component {
         hdfc_no: `D ${fuel_value.date.split("-")[1]}/${fuel_value.date.split("-")[0]}`,
         txnSt: times_obj.txnSt,
         txnEnd: times_obj.txnEnd,
+        fuel_station_logo: fuel_station.logo,
+        fuel_station_name: fuel_station.organisation,
+        fuel_station_address: fuel_address,
       });
       sum_amount += amount_arr[i];
       sum_ltrs += parseFloat(amount_arr[i] / fuel_value.rate);
@@ -245,7 +303,7 @@ export default class FuelBill extends Component {
                 </div>
               </div>
             </fieldset> */}
-                  <fieldset data-v-c7ff15a2="" className="form-group" id="__BVID__71">
+                  {/* <fieldset data-v-c7ff15a2="" className="form-group" id="__BVID__71">
                     <legend tabIndex="-1" className="bv-no-focus-ring col-form-label pt-0" id="__BVID__71__BV_label_">
                       Fuel Station Address
                     </legend>
@@ -269,7 +327,7 @@ export default class FuelBill extends Component {
                         Fuel station address is required
                       </div>
                     </div>
-                  </fieldset>
+                  </fieldset> */}
 
                   <div data-v-c7ff15a2="" className="row">
                     {/* <div data-v-c7ff15a2="" className="col-lg-6">
@@ -624,36 +682,17 @@ export default class FuelBill extends Component {
                           <div data-v-6c875dfd="" className="background">
                             <img data-v-6c875dfd="" src="https://bill-generator-assets.s3.ap-south-1.amazonaws.com/side-logo.png" alt="Bank Logo" className="sidelogo1" />
                             <img data-v-6c875dfd="" src="https://bill-generator-assets.s3.ap-south-1.amazonaws.com/side-logo.png" alt="Bank Logo" className="sidelogo2" />
-                            <img data-v-6c875dfd="" src="https://bill-generator-assets.s3.ap-south-1.amazonaws.com/Bharat-grayscale.png" alt="Logo" className="logo1" />
+                            <img data-v-6c875dfd="" src={bill.fuel_station_logo} alt="Logo" className="logo1" />
                             <p data-v-6c875dfd="" className="top">
                               WELCOME!!!
                             </p>
                             <p data-v-6c875dfd="" className="top" style={{ margin: "4px" }}></p>
                             <p data-v-6c875dfd="" className="top">
-                              BPCL
+                              {bill.fuel_station_name}
                             </p>
-                            {address ? (
-                              <>
-                                <p data-v-6c875dfd="" className="top">
-                                  {address}
-                                </p>
-                              </>
-                            ) : (
-                              <>
-                                <p data-v-6c875dfd="" className="top">
-                                  Enroute Sahay Filling Station
-                                </p>
-                                <p data-v-6c875dfd="" className="top">
-                                  SEC-30, NH-08
-                                </p>
-                                <p data-v-6c875dfd="" className="top">
-                                  DELHI-JAIPUR ROAD
-                                </p>
-                                <p data-v-6c875dfd="" className="top">
-                                  Gurgaon
-                                </p>
-                              </>
-                            )}
+                            <p data-v-6c875dfd="" className="top">
+                              {bill.fuel_station_address}
+                            </p>
                             {/* <p data-v-6c875dfd="" className="top">BPCL</p> */}
 
                             <div data-v-6c875dfd="" className="table1">
