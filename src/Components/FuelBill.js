@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import "./FuelBill.css";
 import { fuel_data } from "./Fueldata";
+import ReactGA from 'react-ga4';
 
 export default class FuelBill extends Component {
   constructor(props) {
@@ -17,47 +18,25 @@ export default class FuelBill extends Component {
       sum_ltrs: 0,
       month_mode: false,
       number_of_bills: "1",
-      petrol_rate: "94.8",
-      month: "2024-04",
-  "fuel_stations": [
-    {
-      "logo": process.env.PUBLIC_URL + "/images/indian-oil.png",
-      "organisation": "IndianOil / IOCL",
-      "addresses": [
-        "Janta Filling Station – Sikanderpur, near Le Meridien, Sector 26",
-        "NH 8, Sector 15 Part 1",
-        "Khandelwal Oil Company – Opposite Ansal Plaza, Sector 1 Palam Vihar",
-        "Shaheed Ramphal Kajla Filling Station – Sector 29"
-      ]
-    },
-    {
-      "logo": process.env.PUBLIC_URL + "/images/bharat-petroleum.png",
-      "organisation": "Bharat Petroleum BPCL",
-      "addresses": [
-        "DLF Phase 5, Sector 43",
-        "Opp Gold Sukh Mall, Sector 44",
-        "Netaji Subhash Marg, Sector 47",
-        "Delhi–Jaipur Expy, Sector 30",
-        "Masani Village – LT Atul Kataria Marg, Sector 6",
-        "Karamveer Filling Station – Rly Stn Rd, Opp Apna Encl, Gurugram",
-        "Jawala Service Station – Delhi–Jaipur Expy, Sector 31"
-      ]
-    },
-    {
-      "logo": process.env.PUBLIC_URL + "/images/hp-oil.png",
-      "organisation": "Hindustan Petroleum (HP)",
-      "addresses": [
-        "Mehrauli-Gurgaon Rd, Sector 17",
-        "Sector 25 – Near Metro, DLF Phase 1",
-        "Station Road, Sector 5",
-        "Hira Fuels – Opp Jalvayu Towers, Sector 53",
-        "HP (Sector 12A) – Sector 12",
-        "Auto Care Centre – Near Tau Devi Lal Park, Sector 23A",
-        "Subhash Chowk, Sector 48"
-      ]
-    }
-  ]
-
+      petrol_rate: "95.45",
+      month: "2025-04",
+      fuel_stations: [
+        {
+          logo: process.env.PUBLIC_URL + "/images/indian-oil.png",
+          organisation: "IndianOil / IOCL",
+          addresses: ["Janta Filling Station – Sikanderpur, near Le Meridien, Sector 26", "NH 8, Sector 15 Part 1", "Khandelwal Oil Company – Opposite Ansal Plaza, Sector 1 Palam Vihar", "Shaheed Ramphal Kajla Filling Station – Sector 29"],
+        },
+        {
+          logo: process.env.PUBLIC_URL + "/images/bharat-petroleum.png",
+          organisation: "Bharat Petroleum BPCL",
+          addresses: ["DLF Phase 5, Sector 43", "Opp Gold Sukh Mall, Sector 44", "Netaji Subhash Marg, Sector 47", "Delhi–Jaipur Expy, Sector 30", "Masani Village – LT Atul Kataria Marg, Sector 6", "Karamveer Filling Station – Rly Stn Rd, Opp Apna Encl, Gurugram", "Jawala Service Station – Delhi–Jaipur Expy, Sector 31"],
+        },
+        {
+          logo: process.env.PUBLIC_URL + "/images/hp-oil.png",
+          organisation: "Hindustan Petroleum (HP)",
+          addresses: ["Mehrauli-Gurgaon Rd, Sector 17", "Sector 25 – Near Metro, DLF Phase 1", "Station Road, Sector 5", "Hira Fuels – Opp Jalvayu Towers, Sector 53", "HP (Sector 12A) – Sector 12", "Auto Care Centre – Near Tau Devi Lal Park, Sector 23A", "Subhash Chowk, Sector 48"],
+        },
+      ],
     };
   }
 
@@ -121,24 +100,70 @@ export default class FuelBill extends Component {
   };
 
   _generateFuelBills = () => {
+    
     let { amount, fuel_data, sum_amount, sum_ltrs, mean } = this.state;
     if (mean === "" || mean === null || isNaN(mean) || mean.includes(".") || mean > 10000) {
       alert("Enter valid integer number in mean amount less than 10000");
       return;
     }
     mean = parseInt(mean);
-    if (amount === "" || amount === null || isNaN(amount) || amount.includes(".") || amount > (mean * 365) - 1) {
-      alert(`Enter valid integer number in total amount less than ${(mean * 365) - 1}`);
+    if (amount === "" || amount === null || isNaN(amount) || amount.includes(".") || amount > mean * 365 - 1) {
+      alert(`Enter valid integer number in total amount less than ${mean * 365 - 1}`);
       return;
     }
+
+    // Filter fuel data from 2025-04-01 to today
+    const startDate = new Date("2025-04-01");
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+
+    let filtered_fuel_data = fuel_data.filter((item) => {
+      const itemDate = new Date(item.date);
+      return itemDate >= startDate && itemDate <= today;
+    });
+
+    if (filtered_fuel_data.length === 0) {
+      alert("No fuel data available for the specified date range");
+      return;
+    }
+
     let total_number_of_bills = parseInt(amount / mean);
+
+    if (total_number_of_bills < 2) {
+      alert("Generate at least 2 bills to ensure first and last dates are included");
+      return;
+    }
+
     let bills = [];
-    let fuel_data_length = fuel_data.length;
-    let skip_factor = parseInt((fuel_data_length - 1) / (total_number_of_bills - 1));
     let amount_arr = this._generateAmountArray(total_number_of_bills);
     let receipt_no = 4102709341; // starting txn number
+
+    // Calculate evenly distributed indices with variance
+    let indices = [];
+    let totalDays = filtered_fuel_data.length - 1;
+    let averageGap = totalDays / (total_number_of_bills - 1);
+
     for (let i = 0; i < total_number_of_bills; i++) {
-      let fuel_value = fuel_data[skip_factor * i];
+      let idealIndex = Math.round(i * averageGap);
+
+      // Add variance of ±1 day for realism (but only for non-first and non-last bills)
+      let variance = 0;
+      if (i !== 0 && i !== total_number_of_bills - 1) {
+        variance = this._generateRandomNumber(-1, 1);
+      }
+
+      let finalIndex = Math.max(0, Math.min(idealIndex + variance, filtered_fuel_data.length - 1));
+
+      // Ensure we don't pick the same date twice in a row
+      if (indices.length > 0 && indices[indices.length - 1] === finalIndex) {
+        finalIndex = Math.min(finalIndex + 1, filtered_fuel_data.length - 1);
+      }
+
+      indices.push(finalIndex);
+    }
+
+    for (let i = 0; i < total_number_of_bills; i++) {
+      let fuel_value = filtered_fuel_data[indices[i]];
       let times_obj = this._getTime();
       let txn_id = this._generateRandomNumber(receipt_no + 10000, receipt_no + 100000000);
       let fuel_station = this._getRandomFuelStation();
@@ -166,6 +191,12 @@ export default class FuelBill extends Component {
       receipt_no = txn_id;
     }
     this.setState({ bills, pdf_view: true, sum_amount, sum_ltrs: sum_ltrs.toFixed(2), total_number_of_bills });
+    ReactGA.event({
+    category: 'User Interaction',
+    action: 'Clicked a Button',
+    label: 'Generate Fuel Bills',
+    amount, fuel_data, sum_amount, sum_ltrs, mean
+  })
   };
 
   _generateFuelBillsMonth = () => {
@@ -201,9 +232,40 @@ export default class FuelBill extends Component {
     let skip_factor = total_number_of_bills > 1 ? parseInt((month_tenure - 1) / (total_number_of_bills - 1)) : 0;
     let amount_arr = this._generateAmountArray(total_number_of_bills);
     let receipt_no = 2102709341 + this._generateRandomNumber(1000, 2102709341); // starting txn number
+    
+    // Get rates for the selected month from fuel_data
+    let month_rates = [];
+    if (month && month.includes("-")) {
+      let month_year = month; // format: YYYY-MM
+      month_rates = fuel_data.filter((item) => item.date.startsWith(month_year));
+    }
+    
     for (let i = 0; i < total_number_of_bills; i++) {
       console.log("month", month, "i", i, "skip_factor", skip_factor);
-      let fuel_value = { date: new Date(new Date(month).getTime() + i * skip_factor * 60 * 60 * 24 * 1000).toISOString().split("T")[0], rate: petrol_rate };
+      let dateStr = new Date(new Date(month).getTime() + i * skip_factor * 60 * 60 * 24 * 1000).toISOString().split("T")[0];
+      
+      // Determine rate: fetch from fuel_data or use petrol_rate with deviation
+      let rate = petrol_rate;
+      if (month_rates.length > 0) {
+        // Find rate for this specific date in fuel_data
+        let rate_entry = month_rates.find((item) => item.date === dateStr);
+        if (rate_entry) {
+          rate = rate_entry.rate;
+        } else if (month_rates.length > 0) {
+          // Use a random rate from the month's available rates
+          rate = month_rates[Math.floor(Math.random() * month_rates.length)].rate;
+        } else {
+          // Fallback: use petrol_rate with ±0.20 deviation
+          let deviation = this._generateRandomNumber(-20, 20) / 100;
+          rate = (petrol_rate + deviation).toFixed(2);
+        }
+      } else {
+        // No data for this month, use petrol_rate with ±0.20 deviation
+        let deviation = this._generateRandomNumber(-20, 20) / 100;
+        rate = (petrol_rate + deviation).toFixed(2);
+      }
+      
+      let fuel_value = { date: dateStr, rate: rate };
       let times_obj = this._getTime();
       let txn_id = this._generateRandomNumber(receipt_no + 10000, receipt_no + 1000000);
       let fuel_station = this._getRandomFuelStation();
@@ -231,6 +293,12 @@ export default class FuelBill extends Component {
       receipt_no = txn_id;
     }
     this.setState({ bills, pdf_view: true, sum_amount, sum_ltrs: sum_ltrs.toFixed(2), total_number_of_bills });
+    ReactGA.event({
+    category: 'User Interaction',
+    action: 'Clicked a Button',
+    label: 'Generate Fuel Bills Monthly',
+    amount, sum_amount, sum_ltrs, mean, number_of_bills, petrol_rate, month
+  })
   };
 
   _sanitizeFuelData = (fuel_data) => {
