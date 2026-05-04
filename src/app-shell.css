@@ -236,6 +236,16 @@
 .bg-stub p { margin: 0; font-size: 14px; }
 
 @media print {
+  @page { margin: 12mm 10mm; }
+  html, body { background: #fff !important; }
   .app-header, .app-nav, .bg-result-bar, .noprint { display: none !important; }
-  .app-shell, .app-content { padding: 0 !important; background: #fff !important; }
+  .app-shell {
+    min-height: 0 !important;
+    background: #fff !important;
+  }
+  .app-content {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
+  }
 }

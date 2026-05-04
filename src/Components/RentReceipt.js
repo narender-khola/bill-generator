@@ -231,59 +231,35 @@ export default class RentReceipt extends Component {
         <div className="bg-grid">
           <div className="bg-field">
             <label className="bg-label">Tenant Name <span className="bg-label-hint">required</span></label>
-            <input className="bg-input" type="text" placeholder="e.g. Narender Kumar" list="rr-hist-tenant" autoComplete="off" value={tenantName} onChange={(e) => this.onChange(e, "tenantName")} />
-            <datalist id="rr-hist-tenant">
-              {getHistory(HISTORY_KEYS.tenantName).map((v) => <option key={v} value={v} />)}
-            </datalist>
+            <input className="bg-input" type="text" placeholder="e.g. Narender Kumar" autoComplete="off" value={tenantName} onChange={(e) => this.onChange(e, "tenantName")} />
           </div>
           <div className="bg-field">
             <label className="bg-label">Tenant PAN <span className="bg-label-hint">optional</span></label>
-            <input className="bg-input" type="text" placeholder="ABCDE1234F" list="rr-hist-tenantpan" autoComplete="off" value={tenantPan} onChange={(e) => this.onChange(e, "tenantPan")} />
-            <datalist id="rr-hist-tenantpan">
-              {getHistory(HISTORY_KEYS.tenantPan).map((v) => <option key={v} value={v} />)}
-            </datalist>
+            <input className="bg-input" type="text" placeholder="ABCDE1234F" autoComplete="off" value={tenantPan} onChange={(e) => this.onChange(e, "tenantPan")} />
           </div>
           <div className="bg-field">
             <label className="bg-label">Landlord 1 Name <span className="bg-label-hint">required</span></label>
-            <input className="bg-input" type="text" placeholder="e.g. Sheela Devi" list="rr-hist-l1name" autoComplete="off" value={landlord1Name} onChange={(e) => this.onChange(e, "landlord1Name")} />
-            <datalist id="rr-hist-l1name">
-              {getHistory(HISTORY_KEYS.landlord1Name).map((v) => <option key={v} value={v} />)}
-            </datalist>
+            <input className="bg-input" type="text" placeholder="e.g. Sheela Devi" autoComplete="off" value={landlord1Name} onChange={(e) => this.onChange(e, "landlord1Name")} />
           </div>
           <div className="bg-field">
             <label className="bg-label">Landlord 1 PAN <span className="bg-label-hint">optional</span></label>
-            <input className="bg-input" type="text" placeholder="BGAPD5434J" list="rr-hist-l1pan" autoComplete="off" value={landlord1Pan} onChange={(e) => this.onChange(e, "landlord1Pan")} />
-            <datalist id="rr-hist-l1pan">
-              {getHistory(HISTORY_KEYS.landlord1Pan).map((v) => <option key={v} value={v} />)}
-            </datalist>
+            <input className="bg-input" type="text" placeholder="BGAPD5434J" autoComplete="off" value={landlord1Pan} onChange={(e) => this.onChange(e, "landlord1Pan")} />
           </div>
           <div className="bg-field">
             <label className="bg-label">Landlord 2 Name <span className="bg-label-hint">optional, joint owner</span></label>
-            <input className="bg-input" type="text" placeholder="e.g. Meenakshi Yadav" list="rr-hist-l2name" autoComplete="off" value={landlord2Name} onChange={(e) => this.onChange(e, "landlord2Name")} />
-            <datalist id="rr-hist-l2name">
-              {getHistory(HISTORY_KEYS.landlord2Name).map((v) => <option key={v} value={v} />)}
-            </datalist>
+            <input className="bg-input" type="text" placeholder="e.g. Meenakshi Yadav" autoComplete="off" value={landlord2Name} onChange={(e) => this.onChange(e, "landlord2Name")} />
           </div>
           <div className="bg-field">
             <label className="bg-label">Landlord 2 PAN <span className="bg-label-hint">optional</span></label>
-            <input className="bg-input" type="text" placeholder="BDTPY6976Q" list="rr-hist-l2pan" autoComplete="off" value={landlord2Pan} onChange={(e) => this.onChange(e, "landlord2Pan")} />
-            <datalist id="rr-hist-l2pan">
-              {getHistory(HISTORY_KEYS.landlord2Pan).map((v) => <option key={v} value={v} />)}
-            </datalist>
+            <input className="bg-input" type="text" placeholder="BDTPY6976Q" autoComplete="off" value={landlord2Pan} onChange={(e) => this.onChange(e, "landlord2Pan")} />
           </div>
           <div className="bg-field" style={{ gridColumn: "1 / -1" }}>
             <label className="bg-label">Property Address <span className="bg-label-hint">required</span></label>
-            <input className="bg-input" type="text" placeholder="e.g. 2nd Floor, House No 42, PU Block Pitampura" list="rr-hist-addr" autoComplete="off" value={propertyAddress} onChange={(e) => this.onChange(e, "propertyAddress")} />
-            <datalist id="rr-hist-addr">
-              {getHistory(HISTORY_KEYS.propertyAddress).map((v) => <option key={v} value={v} />)}
-            </datalist>
+            <input className="bg-input" type="text" placeholder="e.g. 2nd Floor, House No 42, PU Block Pitampura" autoComplete="off" value={propertyAddress} onChange={(e) => this.onChange(e, "propertyAddress")} />
           </div>
           <div className="bg-field">
             <label className="bg-label">Monthly Rent (Rs.) <span className="bg-label-hint">required</span></label>
-            <input className="bg-input" type="number" placeholder="e.g. 20000" list="rr-hist-rent" autoComplete="off" value={monthlyRent} onChange={(e) => this.onChange(e, "monthlyRent")} />
-            <datalist id="rr-hist-rent">
-              {getHistory(HISTORY_KEYS.monthlyRent).map((v) => <option key={v} value={v} />)}
-            </datalist>
+            <input className="bg-input" type="number" placeholder="e.g. 20000" autoComplete="off" value={monthlyRent} onChange={(e) => this.onChange(e, "monthlyRent")} />
           </div>
           <div className="bg-field">
             <label className="bg-label">FY Start Year <span className="bg-label-hint">e.g. 2025 → FY 2025-26</span></label>

@@ -186,31 +186,19 @@ export default class DriverSalary extends Component {
         <div className="bg-grid">
           <div className="bg-field">
             <label className="bg-label">Employee Name <span className="bg-label-hint">required</span></label>
-            <input className="bg-input" type="text" placeholder="e.g. Narender Kumar" list="ds-hist-employee" autoComplete="off" value={employeeName} onChange={(e) => this.onChange(e, "employeeName")} />
-            <datalist id="ds-hist-employee">
-              {getHistory(HISTORY_KEYS.employeeName).map((v) => <option key={v} value={v} />)}
-            </datalist>
+            <input className="bg-input" type="text" placeholder="e.g. Narender Kumar" autoComplete="off" value={employeeName} onChange={(e) => this.onChange(e, "employeeName")} />
           </div>
           <div className="bg-field">
             <label className="bg-label">Driver Name <span className="bg-label-hint">required</span></label>
-            <input className="bg-input" type="text" placeholder="e.g. Sagar Dahiya" list="ds-hist-driver" autoComplete="off" value={driverName} onChange={(e) => this.onChange(e, "driverName")} />
-            <datalist id="ds-hist-driver">
-              {getHistory(HISTORY_KEYS.driverName).map((v) => <option key={v} value={v} />)}
-            </datalist>
+            <input className="bg-input" type="text" placeholder="e.g. Sagar Dahiya" autoComplete="off" value={driverName} onChange={(e) => this.onChange(e, "driverName")} />
           </div>
           <div className="bg-field">
             <label className="bg-label">Vehicle Number <span className="bg-label-hint">required</span></label>
-            <input className="bg-input" type="text" placeholder="e.g. HR36AM4875" list="ds-hist-vehicle" autoComplete="off" value={vehicleNumber} onChange={(e) => this.onChange(e, "vehicleNumber")} />
-            <datalist id="ds-hist-vehicle">
-              {getHistory(HISTORY_KEYS.vehicleNumber).map((v) => <option key={v} value={v} />)}
-            </datalist>
+            <input className="bg-input" type="text" placeholder="e.g. HR36AM4875" autoComplete="off" value={vehicleNumber} onChange={(e) => this.onChange(e, "vehicleNumber")} />
           </div>
           <div className="bg-field">
             <label className="bg-label">Monthly Amount (Rs.) <span className="bg-label-hint">required</span></label>
-            <input className="bg-input" type="number" placeholder="e.g. 20000" list="ds-hist-amount" autoComplete="off" value={amount} onChange={(e) => this.onChange(e, "amount")} />
-            <datalist id="ds-hist-amount">
-              {getHistory(HISTORY_KEYS.amount).map((v) => <option key={v} value={v} />)}
-            </datalist>
+            <input className="bg-input" type="number" placeholder="e.g. 20000" autoComplete="off" value={amount} onChange={(e) => this.onChange(e, "amount")} />
           </div>
           {mode === "single" ? (
             <div className="bg-field">

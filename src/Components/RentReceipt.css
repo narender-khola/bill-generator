@@ -97,11 +97,20 @@
 }
 
 @media print {
+  .rr-receipts {
+    gap: 8px;
+    margin: 0;
+  }
   .rr-receipt {
     border: 1px solid #94a3b8;
     box-shadow: none;
     page-break-inside: avoid;
-    margin-bottom: 12px;
+    margin: 0 0 8px 0;
+    max-width: none;
+  }
+  .rr-receipt:last-child {
+    margin-bottom: 0;
+    page-break-after: avoid;
   }
   .rr-stamp {
     -webkit-print-color-adjust: exact;
