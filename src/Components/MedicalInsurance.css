@@ -1,0 +1,271 @@
+.mi-page {
+  background: #ffffff;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 18px 28px 12px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  color: #1f2937;
+  line-height: 1.45;
+  border: 1px solid #e2e8f0;
+  box-sizing: border-box;
+}
+
+.mi-section {
+  padding: 4px 0 10px;
+}
+
+.mi-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 0;
+  padding-bottom: 6px;
+}
+
+.mi-company {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.mi-logo {
+  width: 70px;
+  height: auto;
+  display: block;
+}
+
+.mi-plan {
+  margin: 14px 0 6px;
+  font-size: 12px;
+}
+
+.mi-barcode-wrap {
+  margin: 4px 0 14px;
+  width: 250px;
+}
+
+.mi-barcode {
+  width: 100%;
+  height: 38px;
+  display: block;
+}
+
+.mi-barcode-text {
+  font-size: 9px;
+  text-align: center;
+  margin-top: 1px;
+  letter-spacing: 0.5px;
+}
+
+.mi-address {
+  margin: 8px 0 14px;
+}
+
+.mi-addr-line { font-weight: 600; }
+
+.mi-date { margin: 6px 0 2px; }
+
+.mi-greeting { margin: 4px 0 8px; }
+
+.mi-para {
+  margin: 0 0 8px;
+  text-align: left;
+}
+
+.mi-signoff {
+  margin: 14px 0 0;
+}
+
+.mi-signoff-right {
+  text-align: right;
+  margin-top: 14px;
+}
+
+.mi-sig {
+  width: 110px;
+  height: auto;
+  display: block;
+  margin: 4px 0 0;
+}
+
+.mi-attorney {
+  font-size: 10.5px;
+  margin-top: 2px;
+}
+
+.mi-cut-line {
+  border-top: 1px dashed #475569;
+  margin: 14px 0 12px;
+  position: relative;
+  height: 0;
+}
+.mi-scissors {
+  position: absolute;
+  left: 8px;
+  top: -10px;
+  background: #ffffff;
+  padding: 0 4px;
+  font-size: 14px;
+  color: #475569;
+}
+
+.mi-cert-greeting {
+  margin-top: 8px;
+  font-weight: 600;
+}
+
+.mi-subject {
+  margin: 6px 0 8px;
+}
+
+.mi-cert-para {
+  margin-bottom: 10px;
+}
+
+.mi-table-label {
+  margin: 8px 0 0;
+}
+
+.mi-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 4px 0 8px;
+  font-size: 10px;
+}
+
+.mi-table th, .mi-table td {
+  border: 1px solid #475569;
+  padding: 4px 6px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.mi-table thead th {
+  background: #c9d4e0;
+  font-weight: 600;
+  text-align: center;
+}
+
+.mi-table-title {
+  background: #c9d4e0 !important;
+  text-align: center;
+  font-weight: 700;
+  font-size: 11px;
+}
+
+.mi-note {
+  margin: 10px 0 8px;
+  font-size: 10.5px;
+}
+.mi-note ol {
+  padding-left: 18px;
+  margin: 4px 0 0;
+}
+.mi-note li { margin-bottom: 2px; }
+
+.mi-cert-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 8px;
+}
+
+.mi-cert-sig-block {
+  text-align: right;
+}
+
+.mi-cert-sig-block .mi-sig {
+  margin-left: auto;
+}
+
+.mi-footer {
+  margin-top: 18px;
+  padding-top: 8px;
+  border-top: 1px solid #94a3b8;
+  font-size: 8.5px;
+  line-height: 1.55;
+  color: #1f2937;
+}
+
+/* Form-side: members editor */
+.mi-members {
+  margin: 24px 0 0;
+}
+
+.mi-members-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.mi-members-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  color: #0f172a;
+}
+
+.mi-member-row {
+  position: relative;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.mi-member-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+@media (min-width: 700px) {
+  .mi-member-grid {
+    grid-template-columns: 2fr 1fr 1fr 1.2fr 1.4fr;
+  }
+}
+
+.mi-remove-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: transparent;
+  border: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mi-remove-btn:hover { background: #fee2e2; color: #b91c1c; }
+
+@media (max-width: 700px) {
+  .mi-page { padding: 12px 14px 10px; font-size: 10px; }
+  .mi-company { font-size: 13px; }
+  .mi-table { font-size: 9px; }
+}
+
+@media print {
+  .mi-page {
+    border: 0;
+    padding: 0;
+    margin: 0 auto;
+    max-width: none;
+  }
+  .mi-logo,
+  .mi-table-title,
+  .mi-table thead th {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .mi-page { page-break-inside: avoid; }
+}
