@@ -4,9 +4,10 @@ import FuelBill from "./Components/FuelBill";
 import FiberBill from './Components/FiberBill';
 import ReactGA from 'react-ga4';
 
-const TRACKING_ID = process.env.REACT_APP_GA_TRACKING_ID; // Use env variable in a real project
-console.log("GA Tracking ID:", TRACKING_ID);
-ReactGA.initialize(TRACKING_ID);
+const TRACKING_ID = process.env.REACT_APP_GA_TRACKING_ID;
+if (TRACKING_ID) {
+  ReactGA.initialize(TRACKING_ID);
+}
 
 
 function App() {
