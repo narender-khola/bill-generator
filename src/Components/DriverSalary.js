@@ -186,19 +186,19 @@ export default class DriverSalary extends Component {
         <div className="bg-grid">
           <div className="bg-field">
             <label className="bg-label">Employee Name <span className="bg-label-hint">required</span></label>
-            <input className="bg-input" type="text" placeholder="e.g. Narender Kumar" autoComplete="off" value={employeeName} onChange={(e) => this.onChange(e, "employeeName")} />
+            <input className="bg-input" type="text" autoComplete="off" value={employeeName} onChange={(e) => this.onChange(e, "employeeName")} />
           </div>
           <div className="bg-field">
             <label className="bg-label">Driver Name <span className="bg-label-hint">required</span></label>
-            <input className="bg-input" type="text" placeholder="e.g. Sagar Dahiya" autoComplete="off" value={driverName} onChange={(e) => this.onChange(e, "driverName")} />
+            <input className="bg-input" type="text" autoComplete="off" value={driverName} onChange={(e) => this.onChange(e, "driverName")} />
           </div>
           <div className="bg-field">
             <label className="bg-label">Vehicle Number <span className="bg-label-hint">required</span></label>
-            <input className="bg-input" type="text" placeholder="e.g. HR36AM4875" autoComplete="off" value={vehicleNumber} onChange={(e) => this.onChange(e, "vehicleNumber")} />
+            <input className="bg-input" type="text" autoComplete="off" value={vehicleNumber} onChange={(e) => this.onChange(e, "vehicleNumber")} />
           </div>
           <div className="bg-field">
             <label className="bg-label">Monthly Amount (Rs.) <span className="bg-label-hint">required</span></label>
-            <input className="bg-input" type="number" placeholder="e.g. 20000" autoComplete="off" value={amount} onChange={(e) => this.onChange(e, "amount")} />
+            <input className="bg-input" type="number" autoComplete="off" value={amount} onChange={(e) => this.onChange(e, "amount")} />
           </div>
           {mode === "single" ? (
             <div className="bg-field">
@@ -208,7 +208,7 @@ export default class DriverSalary extends Component {
           ) : (
             <div className="bg-field">
               <label className="bg-label">FY Start Year <span className="bg-label-hint">e.g. 2025 → FY 2025-26</span></label>
-              <input className="bg-input" type="number" placeholder="2025" value={fyStartYear} onChange={(e) => this.onChange(e, "fyStartYear")} />
+              <input className="bg-input" type="number" value={fyStartYear} onChange={(e) => this.onChange(e, "fyStartYear")} />
             </div>
           )}
         </div>

@@ -231,39 +231,39 @@ export default class RentReceipt extends Component {
         <div className="bg-grid">
           <div className="bg-field">
             <label className="bg-label">Tenant Name <span className="bg-label-hint">required</span></label>
-            <input className="bg-input" type="text" placeholder="e.g. Narender Kumar" autoComplete="off" value={tenantName} onChange={(e) => this.onChange(e, "tenantName")} />
+            <input className="bg-input" type="text" autoComplete="off" value={tenantName} onChange={(e) => this.onChange(e, "tenantName")} />
           </div>
           <div className="bg-field">
             <label className="bg-label">Tenant PAN <span className="bg-label-hint">optional</span></label>
-            <input className="bg-input" type="text" placeholder="ABCDE1234F" autoComplete="off" value={tenantPan} onChange={(e) => this.onChange(e, "tenantPan")} />
+            <input className="bg-input" type="text" autoComplete="off" value={tenantPan} onChange={(e) => this.onChange(e, "tenantPan")} />
           </div>
           <div className="bg-field">
             <label className="bg-label">Landlord 1 Name <span className="bg-label-hint">required</span></label>
-            <input className="bg-input" type="text" placeholder="e.g. Sheela Devi" autoComplete="off" value={landlord1Name} onChange={(e) => this.onChange(e, "landlord1Name")} />
+            <input className="bg-input" type="text" autoComplete="off" value={landlord1Name} onChange={(e) => this.onChange(e, "landlord1Name")} />
           </div>
           <div className="bg-field">
             <label className="bg-label">Landlord 1 PAN <span className="bg-label-hint">optional</span></label>
-            <input className="bg-input" type="text" placeholder="BGAPD5434J" autoComplete="off" value={landlord1Pan} onChange={(e) => this.onChange(e, "landlord1Pan")} />
+            <input className="bg-input" type="text" autoComplete="off" value={landlord1Pan} onChange={(e) => this.onChange(e, "landlord1Pan")} />
           </div>
           <div className="bg-field">
             <label className="bg-label">Landlord 2 Name <span className="bg-label-hint">optional, joint owner</span></label>
-            <input className="bg-input" type="text" placeholder="e.g. Meenakshi Yadav" autoComplete="off" value={landlord2Name} onChange={(e) => this.onChange(e, "landlord2Name")} />
+            <input className="bg-input" type="text" autoComplete="off" value={landlord2Name} onChange={(e) => this.onChange(e, "landlord2Name")} />
           </div>
           <div className="bg-field">
             <label className="bg-label">Landlord 2 PAN <span className="bg-label-hint">optional</span></label>
-            <input className="bg-input" type="text" placeholder="BDTPY6976Q" autoComplete="off" value={landlord2Pan} onChange={(e) => this.onChange(e, "landlord2Pan")} />
+            <input className="bg-input" type="text" autoComplete="off" value={landlord2Pan} onChange={(e) => this.onChange(e, "landlord2Pan")} />
           </div>
           <div className="bg-field" style={{ gridColumn: "1 / -1" }}>
             <label className="bg-label">Property Address <span className="bg-label-hint">required</span></label>
-            <input className="bg-input" type="text" placeholder="e.g. 2nd Floor, House No 42, PU Block Pitampura" autoComplete="off" value={propertyAddress} onChange={(e) => this.onChange(e, "propertyAddress")} />
+            <input className="bg-input" type="text" autoComplete="off" value={propertyAddress} onChange={(e) => this.onChange(e, "propertyAddress")} />
           </div>
           <div className="bg-field">
             <label className="bg-label">Monthly Rent (Rs.) <span className="bg-label-hint">required</span></label>
-            <input className="bg-input" type="number" placeholder="e.g. 20000" autoComplete="off" value={monthlyRent} onChange={(e) => this.onChange(e, "monthlyRent")} />
+            <input className="bg-input" type="number" autoComplete="off" value={monthlyRent} onChange={(e) => this.onChange(e, "monthlyRent")} />
           </div>
           <div className="bg-field">
             <label className="bg-label">FY Start Year <span className="bg-label-hint">e.g. 2025 → FY 2025-26</span></label>
-            <input className="bg-input" type="number" placeholder="2025" value={fyStartYear} onChange={(e) => this.onChange(e, "fyStartYear")} />
+            <input className="bg-input" type="number" value={fyStartYear} onChange={(e) => this.onChange(e, "fyStartYear")} />
           </div>
         </div>
 
