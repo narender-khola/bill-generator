@@ -1,6 +1,7 @@
-import React, { Component } from "react";
+import React, { Component, useEffect, useRef } from "react";
 import "./MedicalInsurance.css";
 import ReactGA from "react-ga4";
+import JsBarcode from "jsbarcode";
 import { getHistory, addToHistory } from "../utils/inputHistory";
 
 const MONTHS_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -29,28 +30,22 @@ const HISTORY_KEYS = {
 const last = (k, fb) => (getHistory(HISTORY_KEYS[k])[0] ?? fb);
 
 const Barcode = ({ value }) => {
-  const v = value || "0000";
-  const seed = [...v].reduce((s, c) => s + c.charCodeAt(0), 0);
-  const widths = [];
-  let r = seed;
-  for (let i = 0; i < 90; i++) {
-    r = (r * 9301 + 49297) % 233280;
-    widths.push(1 + (r % 3));
-  }
-  let x = 0;
-  const bars = [];
-  for (let i = 0; i < widths.length; i++) {
-    const w = widths[i];
-    if (i % 2 === 0) {
-      bars.push(<rect key={i} x={x} y={0} width={w} height={40} fill="#000" />);
-    }
-    x += w;
-  }
-  return (
-    <svg viewBox={`0 0 ${x} 40`} className="mi-barcode" preserveAspectRatio="none">
-      {bars}
-    </svg>
-  );
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!ref.current || !value) return;
+    try {
+      JsBarcode(ref.current, String(value), {
+        format: "CODE128",
+        displayValue: false,
+        height: 36,
+        width: 1.4,
+        margin: 0,
+        background: "#ffffff",
+        lineColor: "#000000",
+      });
+    } catch {}
+  }, [value]);
+  return <svg ref={ref} className="mi-barcode" />;
 };
 
 export default class MedicalInsurance extends Component {
@@ -371,7 +366,7 @@ const Section2 = ({ d }) => (
     <div className="mi-table-label">Member wise premium break up is as follows:</div>
     <table className="mi-table">
       <thead>
-        <tr><th colSpan={6} className="mi-table-title">Insured Person's Premium Details</th></tr>
+        <tr><th colSpan={7} className="mi-table-title">Insured Person's Premium Details</th></tr>
         <tr>
           <th>Name of Insured Person</th>
           <th>Relation with policy holder</th>

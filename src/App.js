@@ -6,6 +6,7 @@ import FiberBill from "./Components/FiberBill";
 import DriverSalary from "./Components/DriverSalary";
 import RentReceipt from "./Components/RentReceipt";
 import MedicalInsurance from "./Components/MedicalInsurance";
+import NivaBupa from "./Components/NivaBupa";
 import ReactGA from "react-ga4";
 
 const TRACKING_ID = process.env.REACT_APP_GA_TRACKING_ID;
@@ -18,7 +19,8 @@ const GENERATORS = [
   { id: "fiber", label: "Fiber Bill", component: FiberBill, available: true },
   { id: "driver", label: "Driver Salary", component: DriverSalary, available: true },
   { id: "rent", label: "Rent Receipt", component: RentReceipt, available: true },
-  { id: "medical", label: "Medical Insurance", component: MedicalInsurance, available: true },
+  { id: "medical-hdfc", label: "Medical (HDFC)", component: MedicalInsurance, available: true },
+  { id: "medical-niva", label: "Medical (Niva Bupa)", component: NivaBupa, available: true },
 ];
 
 function App() {

@@ -1,0 +1,209 @@
+.nb-page {
+  background: #ffffff;
+  max-width: 920px;
+  margin: 0 auto 24px;
+  padding: 24px 32px 16px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  color: #1f2937;
+  line-height: 1.45;
+  border: 1px solid #e2e8f0;
+  box-sizing: border-box;
+  page-break-after: always;
+}
+.nb-page:last-child { page-break-after: auto; }
+
+.nb-logo-wrap {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 18px;
+}
+.nb-logo {
+  width: 200px;
+  height: auto;
+  display: block;
+}
+
+.nb-welcome-body {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.nb-letter-meta {
+  margin: 24px 0 8px;
+}
+
+.nb-letter-addr {
+  margin: 12px 0 18px;
+}
+
+.nb-letter-subject {
+  margin: 18px 0 12px;
+}
+
+.nb-letter-greeting {
+  margin: 8px 0 12px;
+}
+
+.nb-welcome-body p {
+  margin: 0 0 10px;
+  text-align: left;
+}
+
+.nb-letter-ul {
+  padding-left: 18px;
+  margin: 4px 0 12px;
+}
+
+.nb-letter-ul li {
+  margin-bottom: 4px;
+}
+
+.nb-letter-yours {
+  margin: 12px 0 4px;
+}
+
+.nb-letter-sig {
+  width: 130px;
+  height: auto;
+  display: block;
+  margin: 4px 0 8px;
+}
+
+.nb-letter-attorney {
+  margin: 0 0 14px;
+  line-height: 1.5;
+}
+.nb-letter-attorney em {
+  font-style: italic;
+  color: #475569;
+  font-size: 10.5px;
+}
+
+.nb-letter-imp {
+  margin: 12px 0 0;
+}
+
+.nb-page-footer {
+  margin-top: 24px;
+  padding-top: 12px;
+  border-top: 0;
+  background: #1aa9e1;
+  color: #ffffff;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 10px;
+  border-radius: 0;
+}
+
+.nb-cert-banner {
+  margin: 0 auto 14px;
+  padding: 6px 16px;
+  border: 1px solid #475569;
+  border-radius: 999px;
+  display: inline-block;
+  font-weight: 700;
+  font-size: 12px;
+  text-align: center;
+  background: #ffffff;
+}
+
+.nb-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 6px 0 8px;
+  font-size: 10.5px;
+}
+
+.nb-table th, .nb-table td {
+  border: 1px solid #475569;
+  padding: 5px 7px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.nb-table th {
+  background: #ffffff;
+  font-weight: 700;
+}
+
+.nb-table-policy th { width: auto; }
+.nb-table-policy td { width: auto; }
+
+.nb-eia-head {
+  background: #ffffff !important;
+  font-weight: 700;
+}
+
+.nb-section-heading {
+  font-weight: 700;
+  margin: 14px 0 4px;
+}
+
+.nb-table-cover thead th,
+.nb-table-premium thead th {
+  background: #ffffff;
+  font-weight: 700;
+  text-align: left;
+}
+
+.nb-table-intermediary th {
+  font-size: 14px;
+  font-style: italic;
+  font-weight: 400;
+  padding: 8px;
+}
+.nb-table-intermediary td {
+  font-size: 14px;
+  font-style: italic;
+  padding: 8px;
+}
+
+/* Form-side styles */
+.nb-section-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 22px 0 10px;
+}
+
+.nb-section-hint {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 400;
+  margin-left: 6px;
+}
+
+.nb-member-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+@media (min-width: 700px) {
+  .nb-member-grid {
+    grid-template-columns: 2fr 1fr 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .nb-page { padding: 14px 14px 10px; font-size: 10px; }
+  .nb-table { font-size: 9px; }
+  .nb-logo { width: 130px; }
+}
+
+@media print {
+  .nb-page {
+    border: 0;
+    padding: 0;
+    margin: 0 auto;
+    max-width: none;
+    page-break-after: always;
+  }
+  .nb-page:last-child { page-break-after: auto; }
+  .nb-logo,
+  .nb-page-footer {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

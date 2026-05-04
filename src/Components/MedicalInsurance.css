@@ -47,8 +47,8 @@
 }
 
 .mi-barcode {
-  width: 100%;
-  height: 38px;
+  width: 100% !important;
+  height: 40px !important;
   display: block;
 }
 
