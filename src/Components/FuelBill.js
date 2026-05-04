@@ -2,6 +2,13 @@ import React, { Component } from "react";
 import "./FuelBill.css";
 import { fuel_data } from "./Fueldata";
 import ReactGA from 'react-ga4';
+import { getHistory, addToHistory } from "../utils/inputHistory";
+
+const HISTORY_KEYS = {
+  number_of_bills: "fuel_number_of_bills",
+  mean: "fuel_mean",
+  amount: "fuel_amount",
+};
 
 const _currentMonth = () => {
   const d = new Date();
@@ -27,18 +34,19 @@ export default class FuelBill extends Component {
     super(props);
     const initialMonth = _currentMonth();
     const initialAutoRate = _avgRateForMonth(initialMonth);
+    const last = (k, fb) => (getHistory(HISTORY_KEYS[k])[0] ?? fb);
     this.state = {
       fuel_data: fuel_data,
       receipt_no: 5050,
       address: "",
-      amount: "",
-      mean: "4000",
+      amount: last("amount", ""),
+      mean: last("mean", "4000"),
       bills: [],
       pdf_view: false,
       sum_amount: 0,
       sum_ltrs: 0,
       month_mode: false,
-      number_of_bills: "1",
+      number_of_bills: last("number_of_bills", "1"),
       petrol_rate: initialAutoRate || _latestRate(),
       petrol_rate_auto: !!initialAutoRate,
       month: initialMonth,
@@ -227,6 +235,9 @@ export default class FuelBill extends Component {
       sum_ltrs += parseFloat(amount_arr[i] / fuel_value.rate);
       receipt_no = txn_id;
     }
+    addToHistory(HISTORY_KEYS.amount, String(amount));
+    addToHistory(HISTORY_KEYS.mean, String(mean));
+    document.title = `Fuel Bills - FY (${total_number_of_bills} bills)`;
     this.setState({ bills, pdf_view: true, sum_amount, sum_ltrs: sum_ltrs.toFixed(2), total_number_of_bills });
     ReactGA.event({
     category: 'User Interaction',
@@ -330,6 +341,9 @@ export default class FuelBill extends Component {
       sum_ltrs += parseFloat(amount_arr[i] / fuel_value.rate);
       receipt_no = txn_id;
     }
+    addToHistory(HISTORY_KEYS.mean, String(mean));
+    addToHistory(HISTORY_KEYS.number_of_bills, String(number_of_bills));
+    document.title = `Fuel Bills - ${month} (${total_number_of_bills} bills)`;
     this.setState({ bills, pdf_view: true, sum_amount, sum_ltrs: sum_ltrs.toFixed(2), total_number_of_bills });
     ReactGA.event({
     category: 'User Interaction',
@@ -482,8 +496,9 @@ export default class FuelBill extends Component {
               </button>
             </div>
 
+            <div className="fuel-print-grid">
             {bills.map((bill) => (
-              <div data-v-c7ff15a2="" className="" style={{ display: "inline-block", width: "260px", verticalAlign: "top" }}>
+              <div data-v-c7ff15a2="" className="fuel-print-card" style={{ display: "inline-block", width: "260px", verticalAlign: "top" }}>
                 {/* <h5 data-v-c7ff15a2="" className="live-preview">
               Live Preview
             </h5> */}
@@ -592,6 +607,7 @@ export default class FuelBill extends Component {
                 </bills-100-template>
               </div>
             ))}
+            </div>
           </>
         )}
       </div>

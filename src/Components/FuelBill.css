@@ -36517,3 +36517,31 @@ input[type="color"].form-control:disabled {
 .applyBtn[data-v-0393d8f0] {
   height: calc(1.5em + 0.75rem + 2px);
 }
+
+/* === Print grid: 4 fuel bills per row === */
+@media print {
+  .fuel-print-grid {
+    font-size: 0;
+  }
+  .fuel-print-card {
+    display: inline-block !important;
+    width: 25% !important;
+    box-sizing: border-box;
+    padding: 0 1mm !important;
+    page-break-inside: avoid;
+    vertical-align: top !important;
+  }
+  .fuel-print-card .background[data-v-6c875dfd] {
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+  .fuel-print-card .logo1[data-v-6c875dfd] {
+    width: 70px !important;
+    height: 70px !important;
+    margin-bottom: 4px !important;
+  }
+  .fuel-print-card .sidelogo1[data-v-6c875dfd],
+  .fuel-print-card .sidelogo2[data-v-6c875dfd] {
+    display: none !important;
+  }
+}
