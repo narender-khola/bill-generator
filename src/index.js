@@ -5,8 +5,10 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import ReactGA from 'react-ga4';
 
-const TRACKING_ID = process.env.REACT_APP_GA_TRACKING_ID; // Use env variable in a real project
-ReactGA.initialize(TRACKING_ID);
+const TRACKING_ID = process.env.REACT_APP_GA_TRACKING_ID;
+if (TRACKING_ID) {
+  ReactGA.initialize(TRACKING_ID);
+}
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
