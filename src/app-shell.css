@@ -222,6 +222,19 @@
   margin-left: 4px;
 }
 
+.app-footer {
+  text-align: center;
+  font-size: 11px;
+  color: #94a3b8;
+  padding: 16px 16px 24px;
+}
+.app-footer a {
+  color: #64748b;
+  text-decoration: none;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.app-footer a:hover { text-decoration: underline; }
+
 .bg-stub {
   text-align: center;
   padding: 64px 24px;

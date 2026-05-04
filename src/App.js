@@ -45,7 +45,23 @@ function App() {
       <main className="app-content">
         <Active />
       </main>
+      <BuildInfo />
     </div>
+  );
+}
+
+function BuildInfo() {
+  const sha = process.env.REACT_APP_GIT_SHA;
+  const date = process.env.REACT_APP_BUILD_DATE;
+  if (!sha && !date) return null;
+  const formatted = date ? new Date(date).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }) : null;
+  return (
+    <footer className="app-footer noprint">
+      build {sha ? (
+        <a href={`https://github.com/narender-khola/bill-generator/commit/${sha}`} target="_blank" rel="noreferrer">{sha}</a>
+      ) : "dev"}
+      {formatted ? <span> · {formatted}</span> : null}
+    </footer>
   );
 }
 
