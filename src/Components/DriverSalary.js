@@ -162,10 +162,6 @@ export default class DriverSalary extends Component {
                 </div>
                 <div className="ds-receipt-row"><span className="ds-receipt-label">Period:</span> {r.periodStart} - {r.periodEnd}</div>
                 <div className="ds-receipt-row"><span className="ds-receipt-label">Employee Name:</span> {r.employeeName}</div>
-                <div className="ds-receipt-sign">
-                  <div className="ds-receipt-sign-line">_______________________</div>
-                  <div>Signature</div>
-                </div>
               </div>
             ))}
           </div>
