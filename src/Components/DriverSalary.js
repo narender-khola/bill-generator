@@ -9,7 +9,7 @@ const formatDate = (d) => `${String(d.getDate()).padStart(2, "0")} ${MONTHS_SHOR
 
 const randomTilt = () => {
   const sign = Math.random() < 0.5 ? -1 : 1;
-  return sign * (2 + Math.random() * 3);
+  return sign * (1 + Math.random() * 2);
 };
 
 const buildReceipt = ({ employeeName, driverName, vehicleNumber, amount, year, month0 }) => {

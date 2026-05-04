@@ -10,7 +10,7 @@ const formatINR = (n) => "₹" + Number(n).toLocaleString("en-IN");
 
 const randomTilt = () => {
   const sign = Math.random() < 0.5 ? -1 : 1;
-  return sign * (2 + Math.random() * 3);
+  return sign * (1 + Math.random() * 2);
 };
 
 const HISTORY_KEYS = {
