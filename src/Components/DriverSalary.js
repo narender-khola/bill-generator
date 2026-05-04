@@ -154,7 +154,7 @@ export default class DriverSalary extends Component {
                 <div className="ds-receipt-row"><span className="ds-receipt-label">Driver Name:</span> {r.driverName}</div>
                 <div className="ds-revenue-stamp-wrap">
                   <img
-                    src={process.env.PUBLIC_URL + "/images/revenue-stamp.svg"}
+                    src={process.env.PUBLIC_URL + "/images/revenue-stamp.png"}
                     alt="Revenue Stamp"
                     className="ds-revenue-stamp-img"
                     style={{ transform: `rotate(${r.stampTilt.toFixed(2)}deg)` }}
