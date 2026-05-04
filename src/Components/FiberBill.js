@@ -163,7 +163,7 @@ export default class FiberBill extends Component {
               <div className="fb-top-text">airtel: Prepaid | Postpaid | Broadband | 4G | DTH Services in India</div>
               <div className="fb-content">
                 <div className="fb-left">
-                  <div className="fb-logo">airtel</div>
+                  <img src={process.env.PUBLIC_URL + "/images/airtel-logo.png"} alt="airtel" className="fb-logo-img" />
                   <h1 className="fb-title">Payment Details</h1>
                   <div className="fb-date">{b.dateStr}</div>
                   <div className="fb-info-icon" aria-hidden="true">&#9432;</div>
@@ -182,7 +182,7 @@ export default class FiberBill extends Component {
                       <div className="fb-field-label">RECEIPT NUMBER</div>
                       <div className="fb-field-value">{b.receiptNumber}</div>
                     </div>
-                    <div className="fb-print-icon" aria-hidden="true">&#x1F5B6;</div>
+                    <img src={process.env.PUBLIC_URL + "/images/print-icon.png"} alt="" aria-hidden="true" className="fb-print-icon-img" />
                   </div>
                   <div className="fb-row">
                     <div className="fb-field">
