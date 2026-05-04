@@ -33,9 +33,9 @@
 
 .fb-logo-img {
   display: block;
-  height: 38px;
+  height: 70px;
   width: auto;
-  margin-bottom: 52px;
+  margin-bottom: 48px;
 }
 
 .fb-title {
@@ -100,13 +100,6 @@
   word-break: break-word;
 }
 
-.fb-print-icon-img {
-  width: 22px;
-  height: auto;
-  display: block;
-  opacity: 0.75;
-  margin-top: 2px;
-}
 
 .fb-divider {
   border: 0;
@@ -136,7 +129,7 @@
   .fb-row { grid-template-columns: 1fr; gap: 18px; }
   .fb-title, .fb-date { font-size: 26px; }
   .fb-date { margin-bottom: 32px; }
-  .fb-logo-img { margin-bottom: 24px; height: 28px; }
+  .fb-logo-img { margin-bottom: 24px; height: 50px; }
   .fb-right { padding-top: 0; }
 }
 
@@ -149,8 +142,7 @@
     page-break-after: always;
   }
   .fb-bill:last-child { page-break-after: auto; }
-  .fb-logo-img,
-  .fb-print-icon-img {
+  .fb-logo-img {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }

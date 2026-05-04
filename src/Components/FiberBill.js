@@ -182,7 +182,6 @@ export default class FiberBill extends Component {
                       <div className="fb-field-label">RECEIPT NUMBER</div>
                       <div className="fb-field-value">{b.receiptNumber}</div>
                     </div>
-                    <img src={process.env.PUBLIC_URL + "/images/print-icon.png"} alt="" aria-hidden="true" className="fb-print-icon-img" />
                   </div>
                   <div className="fb-row">
                     <div className="fb-field">
