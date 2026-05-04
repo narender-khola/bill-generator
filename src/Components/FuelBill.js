@@ -3,9 +3,24 @@ import "./FuelBill.css";
 import { fuel_data } from "./Fueldata";
 import ReactGA from 'react-ga4';
 
+const _currentMonth = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+};
+
+const _avgRateForMonth = (month) => {
+  if (!month || !month.includes("-")) return null;
+  const rows = fuel_data.filter((r) => r.date.startsWith(month));
+  if (rows.length === 0) return null;
+  const avg = rows.reduce((s, r) => s + parseFloat(r.rate), 0) / rows.length;
+  return avg.toFixed(2);
+};
+
 export default class FuelBill extends Component {
   constructor(props) {
     super(props);
+    const initialMonth = _currentMonth();
+    const initialAutoRate = _avgRateForMonth(initialMonth);
     this.state = {
       fuel_data: fuel_data,
       receipt_no: 5050,
@@ -18,8 +33,9 @@ export default class FuelBill extends Component {
       sum_ltrs: 0,
       month_mode: false,
       number_of_bills: "1",
-      petrol_rate: "95.45",
-      month: "2025-04",
+      petrol_rate: initialAutoRate || "95.45",
+      petrol_rate_auto: !!initialAutoRate,
+      month: initialMonth,
       fuel_stations: [
         {
           logo: process.env.PUBLIC_URL + "/images/indian-oil.png",
@@ -45,6 +61,21 @@ export default class FuelBill extends Component {
   };
 
   onChange = (e, id) => {
+    if (id === "month") {
+      const month = e.target.value;
+      const autoRate = _avgRateForMonth(month);
+      this.setState({
+        month,
+        ...(autoRate
+          ? { petrol_rate: autoRate, petrol_rate_auto: true }
+          : { petrol_rate_auto: false }),
+      });
+      return;
+    }
+    if (id === "petrol_rate") {
+      this.setState({ petrol_rate: e.target.value, petrol_rate_auto: false });
+      return;
+    }
     this.setState({ [id]: e.target.value });
   };
 
@@ -317,7 +348,7 @@ export default class FuelBill extends Component {
   }
 
   render() {
-    const { fuel_data, address, amount, mean, receipt_no, bills, pdf_view, total_number_of_bills, sum_amount, sum_ltrs, month_mode, number_of_bills, petrol_rate, month } = this.state;
+    const { fuel_data, address, amount, mean, receipt_no, bills, pdf_view, total_number_of_bills, sum_amount, sum_ltrs, month_mode, number_of_bills, petrol_rate, petrol_rate_auto, month } = this.state;
     return (
       <div className="">
         {!pdf_view ? (
@@ -450,6 +481,11 @@ export default class FuelBill extends Component {
                             </legend>
                             <div>
                               <input data-v-c7ff15a2="" onChange={(e) => this.onChange(e, "petrol_rate")} value={petrol_rate} type="text" placeholder="Petrol Rate" className="form-control" id="__BVID__76" required="required" aria-required="true" />
+                              {petrol_rate_auto ? (
+                                <small className="form-text text-muted" style={{ color: "#0a7d22" }}>
+                                  Auto-filled (avg rate for {month} from historical data)
+                                </small>
+                              ) : null}
                               <div data-v-c7ff15a2="" className="invalid-feedback">
                                 {" "}
                                 Petrol Rate is required
