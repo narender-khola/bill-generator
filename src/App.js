@@ -15,7 +15,7 @@ if (TRACKING_ID) {
 const GENERATORS = [
   { id: "fuel", label: "Fuel Bill", component: FuelBill, available: true },
   { id: "fiber", label: "Fiber Bill", component: FiberBill, available: true },
-  { id: "driver", label: "Driver Salary", component: DriverSalary, available: false },
+  { id: "driver", label: "Driver Salary", component: DriverSalary, available: true },
   { id: "rent", label: "Rent Receipt", component: RentReceipt, available: false },
 ];
 
