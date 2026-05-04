@@ -1,10 +1,16 @@
 import React, { Component } from "react";
 import "./DriverSalary.css";
 import ReactGA from "react-ga4";
+import { getHistory, saveAll } from "../utils/inputHistory";
 
 const MONTHS_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 const formatDate = (d) => `${String(d.getDate()).padStart(2, "0")} ${MONTHS_SHORT[d.getMonth()]} ${d.getFullYear()}`;
+
+const randomTilt = () => {
+  const sign = Math.random() < 0.5 ? -1 : 1;
+  return sign * (5 + Math.random() * 5);
+};
 
 const buildReceipt = ({ employeeName, driverName, vehicleNumber, amount, year, month0 }) => {
   const start = new Date(year, month0, 1);
@@ -17,7 +23,15 @@ const buildReceipt = ({ employeeName, driverName, vehicleNumber, amount, year, m
     employeeName,
     driverName,
     vehicleNumber,
+    stampTilt: randomTilt(),
   };
+};
+
+const HISTORY_KEYS = {
+  employeeName: "driver_employeeName",
+  driverName: "driver_driverName",
+  vehicleNumber: "driver_vehicleNumber",
+  amount: "driver_amount",
 };
 
 export default class DriverSalary extends Component {
@@ -26,12 +40,13 @@ export default class DriverSalary extends Component {
     const now = new Date();
     const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
     const fyStartYear = now.getMonth() >= 3 ? now.getFullYear() : now.getFullYear() - 1;
+    const last = (k, fallback) => (getHistory(HISTORY_KEYS[k])[0] ?? fallback);
     this.state = {
       mode: "single",
-      employeeName: "",
-      driverName: "",
-      vehicleNumber: "",
-      amount: "20000",
+      employeeName: last("employeeName", ""),
+      driverName: last("driverName", ""),
+      vehicleNumber: last("vehicleNumber", ""),
+      amount: last("amount", "20000"),
       month: currentMonth,
       fyStartYear: String(fyStartYear),
       receipts: [],
@@ -83,6 +98,13 @@ export default class DriverSalary extends Component {
       }
     }
 
+    saveAll({
+      [HISTORY_KEYS.employeeName]: common.employeeName,
+      [HISTORY_KEYS.driverName]: common.driverName,
+      [HISTORY_KEYS.vehicleNumber]: common.vehicleNumber,
+      [HISTORY_KEYS.amount]: String(common.amount),
+    });
+
     this.setState({ receipts, pdfView: true });
     if (process.env.REACT_APP_GA_TRACKING_ID) {
       ReactGA.event({
@@ -130,7 +152,14 @@ export default class DriverSalary extends Component {
                 </p>
                 <div className="ds-receipt-row"><span className="ds-receipt-label">Vehicle Number:</span> {r.vehicleNumber}</div>
                 <div className="ds-receipt-row"><span className="ds-receipt-label">Driver Name:</span> {r.driverName}</div>
-                <div className="ds-revenue-stamp">Revenue Stamp</div>
+                <div className="ds-revenue-stamp-wrap">
+                  <img
+                    src={process.env.PUBLIC_URL + "/images/revenue-stamp.svg"}
+                    alt="Revenue Stamp"
+                    className="ds-revenue-stamp-img"
+                    style={{ transform: `rotate(${r.stampTilt.toFixed(2)}deg)` }}
+                  />
+                </div>
                 <div className="ds-receipt-row"><span className="ds-receipt-label">Period:</span> {r.periodStart} - {r.periodEnd}</div>
                 <div className="ds-receipt-row"><span className="ds-receipt-label">Employee Name:</span> {r.employeeName}</div>
                 <div className="ds-receipt-sign">
@@ -161,19 +190,31 @@ export default class DriverSalary extends Component {
         <div className="bg-grid">
           <div className="bg-field">
             <label className="bg-label">Employee Name <span className="bg-label-hint">required</span></label>
-            <input className="bg-input" type="text" placeholder="e.g. Narender Kumar" value={employeeName} onChange={(e) => this.onChange(e, "employeeName")} />
+            <input className="bg-input" type="text" placeholder="e.g. Narender Kumar" list="ds-hist-employee" autoComplete="off" value={employeeName} onChange={(e) => this.onChange(e, "employeeName")} />
+            <datalist id="ds-hist-employee">
+              {getHistory(HISTORY_KEYS.employeeName).map((v) => <option key={v} value={v} />)}
+            </datalist>
           </div>
           <div className="bg-field">
             <label className="bg-label">Driver Name <span className="bg-label-hint">required</span></label>
-            <input className="bg-input" type="text" placeholder="e.g. Sagar Dahiya" value={driverName} onChange={(e) => this.onChange(e, "driverName")} />
+            <input className="bg-input" type="text" placeholder="e.g. Sagar Dahiya" list="ds-hist-driver" autoComplete="off" value={driverName} onChange={(e) => this.onChange(e, "driverName")} />
+            <datalist id="ds-hist-driver">
+              {getHistory(HISTORY_KEYS.driverName).map((v) => <option key={v} value={v} />)}
+            </datalist>
           </div>
           <div className="bg-field">
             <label className="bg-label">Vehicle Number <span className="bg-label-hint">required</span></label>
-            <input className="bg-input" type="text" placeholder="e.g. HR36AM4875" value={vehicleNumber} onChange={(e) => this.onChange(e, "vehicleNumber")} />
+            <input className="bg-input" type="text" placeholder="e.g. HR36AM4875" list="ds-hist-vehicle" autoComplete="off" value={vehicleNumber} onChange={(e) => this.onChange(e, "vehicleNumber")} />
+            <datalist id="ds-hist-vehicle">
+              {getHistory(HISTORY_KEYS.vehicleNumber).map((v) => <option key={v} value={v} />)}
+            </datalist>
           </div>
           <div className="bg-field">
             <label className="bg-label">Monthly Amount (Rs.) <span className="bg-label-hint">required</span></label>
-            <input className="bg-input" type="number" placeholder="e.g. 20000" value={amount} onChange={(e) => this.onChange(e, "amount")} />
+            <input className="bg-input" type="number" placeholder="e.g. 20000" list="ds-hist-amount" autoComplete="off" value={amount} onChange={(e) => this.onChange(e, "amount")} />
+            <datalist id="ds-hist-amount">
+              {getHistory(HISTORY_KEYS.amount).map((v) => <option key={v} value={v} />)}
+            </datalist>
           </div>
           {mode === "single" ? (
             <div className="bg-field">
