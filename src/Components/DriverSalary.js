@@ -105,6 +105,16 @@ export default class DriverSalary extends Component {
       [HISTORY_KEYS.amount]: String(common.amount),
     });
 
+    let title;
+    if (mode === "single") {
+      const [y, m] = month.split("-").map(Number);
+      title = `Driver Salary - ${MONTHS_SHORT[m - 1]} ${y}`;
+    } else {
+      const fy = parseInt(fyStartYear, 10);
+      title = `Driver Salary - FY ${fy}-${String(fy + 1).slice(2)}`;
+    }
+    document.title = title;
+
     this.setState({ receipts, pdfView: true });
     if (process.env.REACT_APP_GA_TRACKING_ID) {
       ReactGA.event({

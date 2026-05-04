@@ -149,6 +149,8 @@ export default class RentReceipt extends Component {
       [HISTORY_KEYS.monthlyRent]: String(rent),
     });
 
+    document.title = `Rent Receipts - FY ${fy}-${String(fy + 1).slice(2)} (${mode === "monthly" ? "Monthly" : "Quarterly"})`;
+
     this.setState({ receipts, pdfView: true });
     if (process.env.REACT_APP_GA_TRACKING_ID) {
       ReactGA.event({

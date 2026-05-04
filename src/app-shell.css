@@ -248,8 +248,12 @@
 }
 .bg-stub p { margin: 0; font-size: 14px; }
 
+@page {
+  size: A4 portrait;
+  margin: 14mm 12mm;
+}
+
 @media print {
-  @page { margin: 12mm 10mm; }
   html, body { background: #fff !important; }
   .app-header, .app-nav, .bg-result-bar, .noprint { display: none !important; }
   .app-shell {
