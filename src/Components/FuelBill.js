@@ -46,6 +46,7 @@ export default class FuelBill extends Component {
       sum_amount: 0,
       sum_ltrs: 0,
       month_mode: false,
+      crumpled: false,
       number_of_bills: last("number_of_bills", "1"),
       petrol_rate: initialAutoRate || _latestRate(),
       petrol_rate_auto: !!initialAutoRate,
@@ -369,7 +370,7 @@ export default class FuelBill extends Component {
   }
 
   render() {
-    const { fuel_data, address, amount, mean, receipt_no, bills, pdf_view, total_number_of_bills, sum_amount, sum_ltrs, month_mode, number_of_bills, petrol_rate, petrol_rate_auto, month } = this.state;
+    const { fuel_data, address, amount, mean, receipt_no, bills, pdf_view, total_number_of_bills, sum_amount, sum_ltrs, month_mode, number_of_bills, petrol_rate, petrol_rate_auto, month, crumpled } = this.state;
     return (
       <div className="">
         {!pdf_view ? (
@@ -473,6 +474,14 @@ export default class FuelBill extends Component {
               >
                 Generate Bills
               </button>
+              <label className="fuel-crumple-toggle">
+                <input
+                  type="checkbox"
+                  checked={crumpled}
+                  onChange={(e) => this.setState({ crumpled: e.target.checked })}
+                />
+                <span>Crumpled receipts (look scanned)</span>
+              </label>
             </div>
 
             {!month_mode ? (
@@ -496,9 +505,9 @@ export default class FuelBill extends Component {
               </button>
             </div>
 
-            <div className="fuel-print-grid">
-            {bills.map((bill) => (
-              <div data-v-c7ff15a2="" className="fuel-print-card" style={{ display: "inline-block", width: "260px", verticalAlign: "top" }}>
+            <div className={`fuel-print-grid ${crumpled ? "fuel-crumpled" : ""}`}>
+            {bills.map((bill, idx) => (
+              <div data-v-c7ff15a2="" className={`fuel-print-card ${crumpled ? `fuel-card-tilt-${idx % 5}` : ""}`} style={{ display: "inline-block", width: "260px", verticalAlign: "top" }}>
                 {/* <h5 data-v-c7ff15a2="" className="live-preview">
               Live Preview
             </h5> */}

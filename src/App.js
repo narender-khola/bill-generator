@@ -7,6 +7,7 @@ import DriverSalary from "./Components/DriverSalary";
 import RentReceipt from "./Components/RentReceipt";
 import MedicalInsurance from "./Components/MedicalInsurance";
 import NivaBupa from "./Components/NivaBupa";
+import LTA from "./Components/LTA";
 import ReactGA from "react-ga4";
 
 const TRACKING_ID = process.env.REACT_APP_GA_TRACKING_ID;
@@ -21,6 +22,7 @@ const GENERATORS = [
   { id: "rent", label: "Rent Receipt", component: RentReceipt, available: true },
   { id: "medical-hdfc", label: "Medical (HDFC)", component: MedicalInsurance, available: true },
   { id: "medical-niva", label: "Medical (Niva Bupa)", component: NivaBupa, available: true },
+  { id: "lta", label: "LTA", component: LTA, available: true },
 ];
 
 function App() {
@@ -29,8 +31,13 @@ function App() {
   return (
     <div className="app-shell">
       <header className="app-header noprint">
-        <h1 className="app-title">Bill Generator</h1>
-        <p className="app-subtitle">Fuel, fiber, and more — pick a generator below.</p>
+        <div className="app-header-row">
+          <img src={process.env.PUBLIC_URL + "/favicon.svg"} alt="" className="app-header-logo" />
+          <div>
+            <h1 className="app-title">Bill Generator</h1>
+            <p className="app-subtitle">Fuel, fiber, and more — pick a generator below.</p>
+          </div>
+        </div>
       </header>
       <nav className="app-nav noprint">
         {GENERATORS.map((g) => (
