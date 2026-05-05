@@ -8,6 +8,8 @@ import RentReceipt from "./Components/RentReceipt";
 import MedicalInsurance from "./Components/MedicalInsurance";
 import NivaBupa from "./Components/NivaBupa";
 import LTA from "./Components/LTA";
+import Login from "./Login";
+import { isAuthed, logout } from "./auth";
 import ReactGA from "react-ga4";
 
 const TRACKING_ID = process.env.REACT_APP_GA_TRACKING_ID;
@@ -27,7 +29,10 @@ const GENERATORS = [
 
 function App() {
   const [active, setActive] = useState("fuel");
+  const [authed, setAuthed] = useState(() => isAuthed());
+  if (!authed) return <Login onAuth={() => setAuthed(true)} />;
   const Active = GENERATORS.find((g) => g.id === active).component;
+  const onLogout = () => { logout(); setAuthed(false); };
   return (
     <div className="app-shell">
       <header className="app-header noprint">
@@ -37,6 +42,7 @@ function App() {
             <h1 className="app-title">Bill Generator</h1>
             <p className="app-subtitle">Fuel, fiber, and more — pick a generator below.</p>
           </div>
+          <button type="button" className="app-logout-btn" onClick={onLogout}>Sign out</button>
         </div>
       </header>
       <nav className="app-nav noprint">

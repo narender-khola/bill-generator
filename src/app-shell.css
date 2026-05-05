@@ -19,6 +19,25 @@
   align-items: center;
   gap: 14px;
 }
+.app-header-row > div { flex: 1; min-width: 0; }
+.app-logout-btn {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #475569;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.app-logout-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
 .app-header-logo {
   width: 44px;
   height: 44px;
