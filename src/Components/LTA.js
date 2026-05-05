@@ -633,8 +633,9 @@ const BoardingPassPages = ({ d }) => {
   const all = [...onwardCards, ...returnCards];
 
   const pages = [];
-  for (let i = 0; i < all.length; i += 2) {
-    pages.push(all.slice(i, i + 2));
+  const PER_PAGE = 2;
+  for (let i = 0; i < all.length; i += PER_PAGE) {
+    pages.push(all.slice(i, i + PER_PAGE));
   }
 
   return (
@@ -681,7 +682,7 @@ const BoardingPass = ({ p, f, seat, seq, airline }) => {
           </div>
           <div className="lta-bp-bottom">
             <div className="lta-bp-qr-box">
-              <QRCodeSVG value={qrPayload} size={90} level="L" />
+              <QRCodeSVG value={qrPayload} size={110} level="L" />
             </div>
             <div className="lta-bp-info">
               <div className="lta-bp-info-row"><span>Departure Date</span><strong>{f.dateBP}</strong> <span>Departure Time</span><strong>{hhmm(f.dep)} Hrs</strong></div>
@@ -698,7 +699,7 @@ const BoardingPass = ({ p, f, seat, seq, airline }) => {
           <div className="lta-bp-stub-row"><span>PNR</span><strong>{f.pnr}</strong></div>
           <div className="lta-bp-stub-row"><span>Services</span><span>{p.type === "Infant" ? "INFT" : "NIL"}</span></div>
           <div className="lta-bp-stub-qr">
-            <QRCodeSVG value={qrPayload} size={56} level="L" />
+            <QRCodeSVG value={qrPayload} size={72} level="L" />
             <div className="lta-bp-stub-info">
               <div><span>Seat</span> <strong>{seat}</strong></div>
               <div><span>Seq</span> <strong>{String(seq).padStart(4, "0")}</strong></div>
