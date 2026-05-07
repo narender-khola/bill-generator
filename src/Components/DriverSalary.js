@@ -49,6 +49,7 @@ export default class DriverSalary extends Component {
       amount: last("amount", "20000"),
       month: currentMonth,
       fyStartYear: String(fyStartYear),
+      endMonth: "",
       receipts: [],
       pdfView: false,
     };
@@ -59,7 +60,7 @@ export default class DriverSalary extends Component {
   setMode = (mode) => this.setState({ mode });
 
   generate = () => {
-    const { mode, employeeName, driverName, vehicleNumber, amount, month, fyStartYear } = this.state;
+    const { mode, employeeName, driverName, vehicleNumber, amount, month, fyStartYear, endMonth } = this.state;
     if (!employeeName.trim() || !driverName.trim() || !vehicleNumber.trim()) {
       alert("Employee Name, Driver Name and Vehicle Number are required");
       return;
@@ -91,10 +92,20 @@ export default class DriverSalary extends Component {
         alert("Enter a valid FY start year (e.g. 2025 for FY 2025-26)");
         return;
       }
+      let endY = null, endM0 = null;
+      if (endMonth && endMonth.includes("-")) {
+        const [ey, em] = endMonth.split("-").map(Number);
+        endY = ey; endM0 = em - 1;
+      }
       for (let i = 0; i < 12; i++) {
         const month0 = (3 + i) % 12;
         const year = fy + (month0 < 3 ? 1 : 0);
+        if (endY !== null && (year > endY || (year === endY && month0 > endM0))) break;
         receipts.push(buildReceipt({ ...common, year, month0 }));
+      }
+      if (receipts.length === 0) {
+        alert("End month is before the start of the financial year");
+        return;
       }
     }
 
@@ -128,7 +139,7 @@ export default class DriverSalary extends Component {
   };
 
   render() {
-    const { mode, employeeName, driverName, vehicleNumber, amount, month, fyStartYear, receipts, pdfView } = this.state;
+    const { mode, employeeName, driverName, vehicleNumber, amount, month, fyStartYear, endMonth, receipts, pdfView } = this.state;
 
     if (pdfView) {
       const totalAmount = receipts.reduce((s, r) => s + r.amount, 0);
@@ -216,16 +227,22 @@ export default class DriverSalary extends Component {
               <input className="bg-input" type="month" value={month} onChange={(e) => this.onChange(e, "month")} />
             </div>
           ) : (
-            <div className="bg-field">
-              <label className="bg-label">FY Start Year <span className="bg-label-hint">e.g. 2025 → FY 2025-26</span></label>
-              <input className="bg-input" type="number" value={fyStartYear} onChange={(e) => this.onChange(e, "fyStartYear")} />
-            </div>
+            <>
+              <div className="bg-field">
+                <label className="bg-label">FY Start Year <span className="bg-label-hint">e.g. 2025 → FY 2025-26</span></label>
+                <input className="bg-input" type="number" value={fyStartYear} onChange={(e) => this.onChange(e, "fyStartYear")} />
+              </div>
+              <div className="bg-field">
+                <label className="bg-label">End Month <span className="bg-label-hint">optional — stop after this month</span></label>
+                <input className="bg-input" type="month" value={endMonth} onChange={(e) => this.onChange(e, "endMonth")} />
+              </div>
+            </>
           )}
         </div>
 
         <div className="bg-actions">
           <button type="button" className="bg-btn bg-btn-primary" onClick={this.generate}>
-            Generate {mode === "year" ? "12 Receipts" : "Receipt"}
+            Generate {mode === "year" ? (endMonth ? "Receipts up to End Month" : "12 Receipts") : "Receipt"}
           </button>
         </div>
 
