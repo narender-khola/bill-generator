@@ -261,21 +261,9 @@ export default class CarRC extends Component {
         </div>
         <div className="rc-page">
           <div className="rc-card rc-front">
+            <RcBackgroundSvg variant={0} />
             <div className="rc-header">
-              <div className="rc-emblem" aria-hidden="true">
-                <svg viewBox="0 0 40 40" width="38" height="38">
-                  <circle cx="20" cy="20" r="18" fill="#ffffff" stroke="#1f2937" strokeWidth="0.6" />
-                  <text x="20" y="14" textAnchor="middle" fontSize="6" fill="#1f2937" fontFamily="serif">अशोक</text>
-                  <circle cx="20" cy="22" r="6" fill="none" stroke="#1f2937" strokeWidth="0.5" />
-                  <g stroke="#1f2937" strokeWidth="0.5">
-                    {Array.from({ length: 12 }, (_, i) => {
-                      const a = (i * 30 * Math.PI) / 180;
-                      return <line key={i} x1={20 + 4 * Math.cos(a)} y1={22 + 4 * Math.sin(a)} x2={20 + 6 * Math.cos(a)} y2={22 + 6 * Math.sin(a)} />;
-                    })}
-                  </g>
-                  <text x="20" y="34" textAnchor="middle" fontSize="3" fill="#1f2937" fontFamily="serif">सत्यमेव जयते</text>
-                </svg>
-              </div>
+              <AshokaEmblem />
               <div className="rc-header-title">
                 <div className="rc-header-line">Indian Union Vehicle Registration Certificate</div>
                 <div className="rc-header-line">Issued by Transport Department GNCT of Delhi</div>
@@ -308,10 +296,10 @@ export default class CarRC extends Component {
             </div>
 
             <div className="rc-edge-text">Card Issue Date ({cardIssueDate})</div>
-            <div className="rc-bg-pattern" aria-hidden="true"></div>
           </div>
 
           <div className="rc-card rc-back">
+            <RcBackgroundSvg variant={1} />
             <div className="rc-back-header">
               <div className="rc-back-badges">
                 <div className="rc-badge rc-jt">JT</div>
@@ -352,10 +340,98 @@ export default class CarRC extends Component {
                 </div>
               </div>
             </div>
-            <div className="rc-bg-pattern" aria-hidden="true"></div>
           </div>
         </div>
       </>
     );
   }
 }
+
+const AshokaEmblem = () => (
+  <svg viewBox="0 0 100 100" width="46" height="46" className="rc-emblem-svg" aria-hidden="true">
+    <defs>
+      <linearGradient id="rc-em-grad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor="#3b3b3b" />
+        <stop offset="100%" stopColor="#0f0f0f" />
+      </linearGradient>
+    </defs>
+    {/* Abacus base with four animals (stylized lines) */}
+    <rect x="20" y="68" width="60" height="6" fill="url(#rc-em-grad)" />
+    <rect x="22" y="74" width="56" height="2" fill="#0f0f0f" />
+    {/* Dharma chakra */}
+    <circle cx="50" cy="71" r="3" fill="#ffffff" stroke="#0f0f0f" strokeWidth="0.4" />
+    {Array.from({ length: 12 }, (_, i) => {
+      const a = (i * 30 * Math.PI) / 180;
+      const x2 = 50 + 2.4 * Math.cos(a);
+      const y2 = 71 + 2.4 * Math.sin(a);
+      return <line key={i} x1={50 + 0.6 * Math.cos(a)} y1={71 + 0.6 * Math.sin(a)} x2={x2} y2={y2} stroke="#0f0f0f" strokeWidth="0.5" />;
+    })}
+    {/* Bull (left) and horse (right) on abacus — simplified silhouettes */}
+    <path d="M 28 70 q 3 -3 6 0 q 1 -2 3 0 q 2 -1 1 2 q 1 1 -1 1 z" fill="#0f0f0f" />
+    <path d="M 64 70 q 3 -3 6 0 q 2 -1 4 0 q 2 0 1 2 q 0 1 -2 1 z" fill="#0f0f0f" />
+    {/* Three lions back-to-back (front lion + side lions visible) */}
+    <g fill="url(#rc-em-grad)">
+      {/* Center lion body */}
+      <ellipse cx="50" cy="48" rx="11" ry="8" />
+      {/* Center lion head */}
+      <circle cx="50" cy="38" r="7" />
+      {/* Mane crown */}
+      <path d="M 43 33 q 0 -5 7 -5 q 7 0 7 5 z" />
+      {/* Side lion (left) */}
+      <ellipse cx="35" cy="50" rx="7" ry="6" />
+      <circle cx="32" cy="42" r="5" />
+      {/* Side lion (right) */}
+      <ellipse cx="65" cy="50" rx="7" ry="6" />
+      <circle cx="68" cy="42" r="5" />
+    </g>
+    {/* Eyes */}
+    <circle cx="48" cy="38" r="0.6" fill="#ffffff" />
+    <circle cx="52" cy="38" r="0.6" fill="#ffffff" />
+    <circle cx="30.5" cy="42" r="0.5" fill="#ffffff" />
+    <circle cx="69.5" cy="42" r="0.5" fill="#ffffff" />
+    {/* "सत्यमेव जयते" inscription strip */}
+    <rect x="14" y="80" width="72" height="9" fill="#ffffff" stroke="#0f0f0f" strokeWidth="0.4" />
+    <text x="50" y="87" textAnchor="middle" fontSize="6" fill="#0f0f0f" fontFamily="serif" fontWeight="700">सत्यमेव जयते</text>
+  </svg>
+);
+
+const RcBackgroundSvg = ({ variant }) => {
+  // Generate horizontal sine waves (guilloche-style security pattern)
+  const lines = [];
+  const w = 600, h = 380;
+  const lineCount = 60;
+  for (let i = 0; i < lineCount; i++) {
+    const baseY = (i / lineCount) * h;
+    const amp = 4 + ((i * 7) % 6);
+    const freq = 0.018 + ((i * 0.0011) % 0.012);
+    const phase = (i * 0.7) + (variant * 1.3);
+    let path = `M -10 ${baseY.toFixed(1)}`;
+    for (let x = 0; x <= w + 10; x += 6) {
+      const y = baseY + Math.sin(x * freq + phase) * amp;
+      path += ` L ${x} ${y.toFixed(1)}`;
+    }
+    const top = baseY < h * 0.32;
+    const bottom = baseY > h * 0.55;
+    const stroke = top ? "#7eb8d6" : bottom ? "#9bca8a" : "#cfe5d3";
+    const opacity = top ? 0.55 : bottom ? 0.55 : 0.30;
+    lines.push(<path key={i} d={path} stroke={stroke} strokeWidth="0.4" fill="none" opacity={opacity} />);
+  }
+  // Add bold sweeping curves at the bottom-right (mimicking the green leaf-like pattern)
+  const sweeps = [];
+  for (let i = 0; i < 7; i++) {
+    const offset = i * 10;
+    const d = `M ${w + 20} ${260 + offset} C ${w * 0.55} ${380 + offset}, ${w * 0.30} ${320 - offset * 0.4}, ${-20} ${380 + offset * 0.6}`;
+    sweeps.push(<path key={`s${i}`} d={d} stroke="#86c170" strokeWidth="1.2" fill="none" opacity="0.42" />);
+  }
+  // Concentric arc clusters (to break up monotony)
+  return (
+    <svg className="rc-bg-svg" viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" aria-hidden="true">
+      <rect x="0" y="0" width={w} height={h * 0.32} fill="#bfdbed" />
+      <rect x="0" y={h * 0.32} width={w} height={h * 0.68} fill="#ffffff" />
+      {lines}
+      {sweeps}
+      <ellipse cx={w * 0.78} cy={h * 0.38} rx={w * 0.4} ry={h * 0.45} fill="#a4d29c" opacity="0.18" />
+      <ellipse cx={w * 0.20} cy={h * 0.78} rx={w * 0.32} ry={h * 0.30} fill="#a4d29c" opacity="0.16" />
+    </svg>
+  );
+};
