@@ -297,7 +297,19 @@ export default class FuelBill extends Component {
       return;
     }
     let bills = [];
-    let skip_factor = total_number_of_bills > 1 ? parseInt((month_tenure - 1) / (total_number_of_bills - 1)) : 0;
+    let day_offsets = [];
+    if (total_number_of_bills === 1) {
+      day_offsets.push(0);
+    } else {
+      const span = month_tenure - 1;
+      const step = span / (total_number_of_bills - 1);
+      for (let i = 0; i < total_number_of_bills; i++) {
+        let day = Math.round(i * step);
+        if (i > 0 && day <= day_offsets[i - 1]) day = day_offsets[i - 1] + 1;
+        if (day > span) day = span;
+        day_offsets.push(day);
+      }
+    }
     let amount_arr = this._generateAmountArray(total_number_of_bills);
     let receipt_no = 2102709341 + this._generateRandomNumber(1000, 2102709341); // starting txn number
     
@@ -309,8 +321,7 @@ export default class FuelBill extends Component {
     }
     
     for (let i = 0; i < total_number_of_bills; i++) {
-      console.log("month", month, "i", i, "skip_factor", skip_factor);
-      let dateStr = new Date(new Date(month).getTime() + i * skip_factor * 60 * 60 * 24 * 1000).toISOString().split("T")[0];
+      let dateStr = new Date(new Date(month).getTime() + day_offsets[i] * 60 * 60 * 24 * 1000).toISOString().split("T")[0];
       
       // Determine rate: fetch from fuel_data or use petrol_rate with deviation
       let rate = petrol_rate;
