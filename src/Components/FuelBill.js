@@ -47,6 +47,7 @@ export default class FuelBill extends Component {
       sum_ltrs: 0,
       month_mode: false,
       crumpled: false,
+      month_end_date: "",
       number_of_bills: last("number_of_bills", "1"),
       petrol_rate: initialAutoRate || _latestRate(),
       petrol_rate_auto: !!initialAutoRate,
@@ -249,7 +250,7 @@ export default class FuelBill extends Component {
   };
 
   _generateFuelBillsMonth = () => {
-    let { amount, sum_amount, sum_ltrs, mean, number_of_bills, petrol_rate, month } = this.state;
+    let { amount, sum_amount, sum_ltrs, mean, number_of_bills, petrol_rate, month, month_end_date } = this.state;
     if (mean === "" || mean === null || isNaN(mean) || mean.includes(".") || mean > 50000) {
       alert("Enter valid integer number in mean amount less than 50000");
       return;
@@ -276,9 +277,26 @@ export default class FuelBill extends Component {
       let month_number = parseInt(month.split("-")[1]) - 1;
       month_tenure = month_arr[month_number];
     }
+    if (month_end_date) {
+      const end = new Date(month_end_date);
+      const start = new Date(month);
+      if (!isNaN(end.getTime()) && end.getFullYear() === start.getFullYear() && end.getMonth() === start.getMonth()) {
+        month_tenure = Math.min(month_tenure, end.getDate());
+      } else if (!isNaN(end.getTime()) && (end.getFullYear() < start.getFullYear() || (end.getFullYear() === start.getFullYear() && end.getMonth() < start.getMonth()))) {
+        alert("End date must be in or after the selected month");
+        return;
+      }
+    }
+    if (month_tenure < 1) {
+      alert("End date is before the start of the selected month");
+      return;
+    }
     let total_number_of_bills = number_of_bills;
+    if (total_number_of_bills > month_tenure) {
+      alert(`With end date ${month_end_date}, only ${month_tenure} day(s) are available — reduce Number of Bills`);
+      return;
+    }
     let bills = [];
-    console.log("month_tenure", month_tenure, "total_number_of_bills", total_number_of_bills);
     let skip_factor = total_number_of_bills > 1 ? parseInt((month_tenure - 1) / (total_number_of_bills - 1)) : 0;
     let amount_arr = this._generateAmountArray(total_number_of_bills);
     let receipt_no = 2102709341 + this._generateRandomNumber(1000, 2102709341); // starting txn number
@@ -370,7 +388,7 @@ export default class FuelBill extends Component {
   }
 
   render() {
-    const { fuel_data, address, amount, mean, receipt_no, bills, pdf_view, total_number_of_bills, sum_amount, sum_ltrs, month_mode, number_of_bills, petrol_rate, petrol_rate_auto, month, crumpled } = this.state;
+    const { fuel_data, address, amount, mean, receipt_no, bills, pdf_view, total_number_of_bills, sum_amount, sum_ltrs, month_mode, number_of_bills, petrol_rate, petrol_rate_auto, month, crumpled, month_end_date } = this.state;
     return (
       <div className="">
         {!pdf_view ? (
@@ -424,6 +442,17 @@ export default class FuelBill extends Component {
                     type="month"
                     value={month}
                     onChange={(e) => this.onChange(e, "month")}
+                  />
+                </div>
+                <div className="bg-field">
+                  <label className="bg-label">End Date <span className="bg-label-hint">optional — bills will not cross this date</span></label>
+                  <input
+                    className="bg-input"
+                    type="date"
+                    value={month_end_date}
+                    min={month ? `${month}-01` : undefined}
+                    max={month ? `${month}-31` : undefined}
+                    onChange={(e) => this.onChange(e, "month_end_date")}
                   />
                 </div>
                 <div className="bg-field">
