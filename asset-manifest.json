@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/bill-generator/static/css/main.6c681b25.css",
-    "main.js": "/bill-generator/static/js/main.da987038.js",
+    "main.css": "/bill-generator/static/css/main.ad4ec97e.css",
+    "main.js": "/bill-generator/static/js/main.bb5f0e02.js",
     "static/js/787.82e3ed33.chunk.js": "/bill-generator/static/js/787.82e3ed33.chunk.js",
     "index.html": "/bill-generator/index.html",
-    "main.6c681b25.css.map": "/bill-generator/static/css/main.6c681b25.css.map",
-    "main.da987038.js.map": "/bill-generator/static/js/main.da987038.js.map",
+    "main.ad4ec97e.css.map": "/bill-generator/static/css/main.ad4ec97e.css.map",
+    "main.bb5f0e02.js.map": "/bill-generator/static/js/main.bb5f0e02.js.map",
     "787.82e3ed33.chunk.js.map": "/bill-generator/static/js/787.82e3ed33.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.6c681b25.css",
-    "static/js/main.da987038.js"
+    "static/css/main.ad4ec97e.css",
+    "static/js/main.bb5f0e02.js"
   ]
 }
