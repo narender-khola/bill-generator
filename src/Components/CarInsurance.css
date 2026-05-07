@@ -1,0 +1,185 @@
+.ci-page {
+  background: #ffffff;
+  max-width: 920px;
+  margin: 0 auto 24px;
+  padding: 18px 24px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10.5px;
+  color: #1f2937;
+  line-height: 1.4;
+  border: 1px solid #e2e8f0;
+  box-sizing: border-box;
+  page-break-after: always;
+}
+.ci-page:last-child { page-break-after: auto; }
+
+.ci-top-row {
+  display: grid;
+  grid-template-columns: 200px 1fr 90px;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.ci-logo { width: 200px; height: auto; display: block; }
+.ci-title { text-align: center; }
+.ci-title-1 { font-size: 18px; font-weight: 700; color: #0f172a; }
+.ci-title-2 { font-size: 12px; }
+.ci-title-3 { font-size: 13px; font-weight: 600; }
+.ci-qr { display: flex; justify-content: flex-end; }
+.ci-qr svg { display: block; }
+
+.ci-policy-line {
+  text-align: center;
+  font-size: 11px;
+  margin: 4px 0 10px;
+  color: #1f2937;
+}
+
+.ci-section-bar {
+  background: #cfd8dc;
+  font-weight: 700;
+  font-size: 11.5px;
+  padding: 6px 10px;
+  margin: 10px 0 0;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.ci-twocol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.ci-kv {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 4px;
+}
+.ci-kv td {
+  padding: 4px 6px;
+  border: 1px solid #cfd8dc;
+  vertical-align: top;
+  font-size: 10.5px;
+}
+.ci-k { font-weight: 700; width: 30%; background: #f8fafc; }
+
+.ci-grid-table td { width: 25%; }
+
+.ci-vehicle {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 4px 0 6px;
+  font-size: 10px;
+}
+.ci-vehicle th, .ci-vehicle td {
+  border: 1px solid #cfd8dc;
+  padding: 5px 6px;
+  vertical-align: top;
+  text-align: center;
+}
+.ci-vehicle thead th {
+  background: #e8eef1;
+  font-weight: 700;
+}
+.ci-r { text-align: right !important; }
+.ci-small { font-size: 9px; color: #64748b; }
+
+.ci-premium-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border: 1px solid #cfd8dc;
+  margin-top: 0;
+}
+.ci-prem-half { padding: 0; }
+.ci-prem-half:first-child { border-right: 1px solid #cfd8dc; }
+.ci-prem-title {
+  background: #cfd8dc;
+  padding: 5px 8px;
+  font-weight: 700;
+  font-size: 11px;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.ci-prem-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10px;
+}
+.ci-prem-table td {
+  padding: 4px 8px;
+  border-bottom: 1px solid #f1f5f9;
+}
+.ci-prem-table .ci-r { text-align: right; font-weight: 600; }
+.ci-prem-total td { font-weight: 700; border-top: 1px solid #cfd8dc; background: #f8fafc; }
+.ci-prem-grand td { font-weight: 700; border-top: 2px solid #1f2937; background: #f1f5f9; font-size: 11px; }
+.ci-prem-divider { font-size: 9.5px; color: #475569; padding: 4px 8px !important; }
+
+.ci-para {
+  font-size: 10.5px;
+  margin: 4px 0;
+  text-align: justify;
+}
+
+.ci-signature {
+  width: 110px;
+  height: auto;
+  display: block;
+  margin: 8px 0 2px;
+}
+
+.ci-page-footer {
+  margin-top: 14px;
+  padding-top: 8px;
+  border-top: 1px solid #cbd5e1;
+  font-size: 9px;
+  color: #475569;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* Form-side */
+.ci-section-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 22px 0 10px;
+}
+
+.ci-addon-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 700px) {
+  .ci-page { padding: 12px; font-size: 9.5px; }
+  .ci-twocol { grid-template-columns: 1fr; }
+  .ci-premium-grid { grid-template-columns: 1fr; }
+  .ci-prem-half:first-child { border-right: 0; border-bottom: 1px solid #cfd8dc; }
+  .ci-vehicle { font-size: 9px; }
+  .ci-top-row { grid-template-columns: 1fr; text-align: center; gap: 6px; }
+  .ci-logo { margin: 0 auto; }
+  .ci-qr { justify-content: center; }
+}
+
+@media print {
+  .ci-page {
+    border: 0;
+    padding: 0;
+    margin: 0 auto;
+    max-width: none;
+    page-break-after: always;
+  }
+  .ci-page:last-child { page-break-after: auto; }
+  .ci-section-bar, .ci-prem-title, .ci-prem-grand td, .ci-prem-total td {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .ci-logo {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
