@@ -545,6 +545,18 @@ export default class FuelBill extends Component {
               </button>
             </div>
 
+            {crumpled ? (
+              <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
+                <defs>
+                  {[0,1,2,3,4].map((i) => (
+                    <filter key={i} id={`fuel-torn-${i}`} x="-4%" y="-4%" width="108%" height="108%">
+                      <feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="3" seed={i * 7 + 11} result="noise" />
+                      <feDisplacementMap in="SourceGraphic" in2="noise" scale="7" xChannelSelector="R" yChannelSelector="G" />
+                    </filter>
+                  ))}
+                </defs>
+              </svg>
+            ) : null}
             <div className={`fuel-print-grid ${crumpled ? "fuel-crumpled" : ""}`}>
             {bills.map((bill, idx) => (
               <div data-v-c7ff15a2="" className={`fuel-print-card ${crumpled ? `fuel-card-tilt-${idx % 5}` : ""}`} style={{ display: "inline-block", width: "260px", verticalAlign: "top" }}>
