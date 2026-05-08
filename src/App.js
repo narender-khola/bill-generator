@@ -9,6 +9,7 @@ import MedicalInsurance from "./Components/MedicalInsurance";
 import NivaBupa from "./Components/NivaBupa";
 import LTA from "./Components/LTA";
 import CarInsurance from "./Components/CarInsurance";
+import IffcoTokio from "./Components/IffcoTokio";
 import CarRC from "./Components/CarRC";
 import Login from "./Login";
 import { isAuthed, logout } from "./auth";
@@ -27,7 +28,8 @@ const GENERATORS = [
   { id: "medical-hdfc", label: "Medical (HDFC)", component: MedicalInsurance, available: true },
   { id: "medical-niva", label: "Medical (Niva Bupa)", component: NivaBupa, available: true },
   { id: "lta", label: "LTA", component: LTA, available: true },
-  { id: "car-insurance", label: "Car Insurance", component: CarInsurance, available: true },
+  { id: "car-insurance", label: "Car Insurance (Zurich Kotak)", component: CarInsurance, available: true },
+  { id: "car-insurance-iffco", label: "Car Insurance (IFFCO Tokio)", component: IffcoTokio, available: true },
   { id: "car-rc", label: "Car RC (Delhi)", component: CarRC, available: true },
 ];
 
