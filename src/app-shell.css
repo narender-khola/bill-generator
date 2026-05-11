@@ -33,6 +33,23 @@
   font-family: inherit;
   white-space: nowrap;
 }
+.app-coffee-link {
+  background: #FFDD00;
+  border: 1px solid #e6c700;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s, transform 0.15s;
+  font-family: inherit;
+}
+.app-coffee-link:hover {
+  background: #ffe633;
+  transform: translateY(-1px);
+}
 .app-logout-btn:hover {
   background: #f1f5f9;
   color: #0f172a;
@@ -264,6 +281,16 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 .app-footer a:hover { text-decoration: underline; }
+.app-footer-coffee {
+  color: #0f172a !important;
+  font-family: inherit !important;
+  font-weight: 600;
+  background: #FFDD00;
+  padding: 4px 10px;
+  border-radius: 6px;
+  display: inline-block;
+}
+.app-footer-coffee:hover { background: #ffe633; text-decoration: none !important; }
 
 .bg-stub {
   text-align: center;

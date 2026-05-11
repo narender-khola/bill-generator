@@ -48,6 +48,15 @@ function App() {
             <h1 className="app-title">Bill Generator</h1>
             <p className="app-subtitle">Fuel, fiber, and more — pick a generator below.</p>
           </div>
+          <a
+            href="https://buymeacoffee.com/narender"
+            target="_blank"
+            rel="noreferrer"
+            className="app-coffee-link"
+            aria-label="Buy me a coffee"
+          >
+            <span role="img" aria-hidden="true">☕</span> Buy me a coffee
+          </a>
           <button type="button" className="app-logout-btn" onClick={onLogout}>Sign out</button>
         </div>
       </header>
@@ -76,14 +85,20 @@ function App() {
 function BuildInfo() {
   const sha = process.env.REACT_APP_GIT_SHA;
   const date = process.env.REACT_APP_BUILD_DATE;
-  if (!sha && !date) return null;
   const formatted = date ? new Date(date).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }) : null;
   return (
     <footer className="app-footer noprint">
-      build {sha ? (
-        <a href={`https://github.com/narender-khola/bill-generator/commit/${sha}`} target="_blank" rel="noreferrer">{sha}</a>
-      ) : "dev"}
-      {formatted ? <span> · {formatted}</span> : null}
+      <a href="https://buymeacoffee.com/narender" target="_blank" rel="noreferrer" className="app-footer-coffee">
+        ☕ Buy me a coffee
+      </a>
+      {(sha || date) ? (
+        <span className="app-footer-build">
+          {" · "}build {sha ? (
+            <a href={`https://github.com/narender-khola/bill-generator/commit/${sha}`} target="_blank" rel="noreferrer">{sha}</a>
+          ) : "dev"}
+          {formatted ? <span> · {formatted}</span> : null}
+        </span>
+      ) : null}
     </footer>
   );
 }

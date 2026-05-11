@@ -64,6 +64,7 @@ export default class FiberBill extends Component {
       dslNumber: last("dslNumber", ""),
       amount: last("amount", "3140"),
       month: currentMonth,
+      endMonthSingle: "",
       fyStartYear: String(fyStartYear),
       endMonth: "",
       bills: [],
@@ -75,7 +76,7 @@ export default class FiberBill extends Component {
   setMode = (mode) => this.setState({ mode });
 
   generate = () => {
-    const { mode, customerName, accountNumber, dslNumber, amount, month, fyStartYear, endMonth } = this.state;
+    const { mode, customerName, accountNumber, dslNumber, amount, month, endMonthSingle, fyStartYear, endMonth } = this.state;
     if (!customerName.trim() || !accountNumber.trim() || !dslNumber.trim()) {
       alert("Customer Name, Account Number and DSL/Fixed Line Number are required");
       return;
@@ -100,7 +101,22 @@ export default class FiberBill extends Component {
         return;
       }
       const [y, m] = month.split("-").map(Number);
-      bills.push(buildBill({ ...common, year: y, month0: m - 1, monthIndex: 0 }));
+      let endY = y, endM0 = m - 1;
+      if (endMonthSingle && endMonthSingle.includes("-")) {
+        const [ey, em] = endMonthSingle.split("-").map(Number);
+        endY = ey; endM0 = em - 1;
+        if (endY < y || (endY === y && endM0 < m - 1)) {
+          alert("End month is before the start month");
+          return;
+        }
+      }
+      let idx = 0;
+      let cy = y, cm0 = m - 1;
+      while (cy < endY || (cy === endY && cm0 <= endM0)) {
+        bills.push(buildBill({ ...common, year: cy, month0: cm0, monthIndex: idx++ }));
+        cm0++;
+        if (cm0 > 11) { cm0 = 0; cy++; }
+      }
     } else {
       const fy = parseInt(fyStartYear, 10);
       if (isNaN(fy) || fy < 2000 || fy > 2100) {
@@ -134,7 +150,12 @@ export default class FiberBill extends Component {
     let title;
     if (mode === "single") {
       const [y, m] = month.split("-").map(Number);
-      title = `Phone Bill - ${MONTHS_SHORT[m - 1]} ${y}`;
+      if (bills.length > 1) {
+        const last = bills[bills.length - 1];
+        title = `Phone Bill - ${MONTHS_SHORT[m - 1]} ${y} to ${last.dateStr.split("/").slice(1).join(" 20")}`;
+      } else {
+        title = `Phone Bill - ${MONTHS_SHORT[m - 1]} ${y}`;
+      }
     } else {
       const fy = parseInt(fyStartYear, 10);
       title = `Phone Bill - FY ${fy}-${String(fy + 1).slice(-2)}`;
@@ -154,7 +175,7 @@ export default class FiberBill extends Component {
   };
 
   render() {
-    const { mode, customerName, accountNumber, dslNumber, amount, month, fyStartYear, endMonth, bills, pdfView } = this.state;
+    const { mode, customerName, accountNumber, dslNumber, amount, month, endMonthSingle, fyStartYear, endMonth, bills, pdfView } = this.state;
 
     if (pdfView) {
       const total = bills.reduce((s, b) => s + b.amount, 0);
@@ -273,10 +294,16 @@ export default class FiberBill extends Component {
             <input className="bg-input" type="number" autoComplete="off" value={amount} onChange={(e) => this.onChange(e, "amount")} />
           </div>
           {mode === "single" ? (
-            <div className="bg-field">
-              <label className="bg-label">Month <span className="bg-label-hint">required</span></label>
-              <input className="bg-input" type="month" value={month} onChange={(e) => this.onChange(e, "month")} />
-            </div>
+            <>
+              <div className="bg-field">
+                <label className="bg-label">Month <span className="bg-label-hint">required</span></label>
+                <input className="bg-input" type="month" value={month} onChange={(e) => this.onChange(e, "month")} />
+              </div>
+              <div className="bg-field">
+                <label className="bg-label">End Month <span className="bg-label-hint">optional — generate range</span></label>
+                <input className="bg-input" type="month" value={endMonthSingle} onChange={(e) => this.onChange(e, "endMonthSingle")} />
+              </div>
+            </>
           ) : (
             <>
               <div className="bg-field">
@@ -293,7 +320,7 @@ export default class FiberBill extends Component {
 
         <div className="bg-actions">
           <button type="button" className="bg-btn bg-btn-primary" onClick={this.generate}>
-            Generate {mode === "year" ? (endMonth ? "Bills up to End Month" : "12 Bills") : "Bill"}
+            Generate {mode === "year" ? (endMonth ? "Bills up to End Month" : "12 Bills") : (endMonthSingle ? "Bills for Range" : "Bill")}
           </button>
         </div>
 
