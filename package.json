@@ -8,6 +8,7 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "html-to-image": "^1.11.13",
     "jimp": "^1.6.1",
     "jsbarcode": "^3.12.3",
     "qrcode.react": "^4.2.0",

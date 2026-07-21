@@ -3,6 +3,7 @@ import "./FuelBill.css";
 import { fuel_data } from "./Fueldata";
 import ReactGA from 'react-ga4';
 import { getHistory, addToHistory } from "../utils/inputHistory";
+import * as htmlToImage from "html-to-image";
 
 const HISTORY_KEYS = {
   number_of_bills: "fuel_number_of_bills",
@@ -478,6 +479,21 @@ export default class FuelBill extends Component {
     // this._sanitizeFuelData();
   }
 
+  handleDownloadImages = async () => {
+    const pages = document.querySelectorAll('.fuel-crumpled-photo-page');
+    for (let i = 0; i < pages.length; i++) {
+      try {
+        const imgData = await htmlToImage.toJpeg(pages[i], { quality: 0.95, pixelRatio: 2 });
+        const link = document.createElement('a');
+        link.href = imgData;
+        link.download = `paytm_receipt_page_${i + 1}.jpg`;
+        link.click();
+      } catch (err) {
+        console.error("Error generating image:", err);
+      }
+    }
+  };
+
   render() {
     const { fuel_data, address, amount, mean, receipt_no, bills, pdf_view, total_number_of_bills, sum_amount, sum_ltrs, month_mode, number_of_bills, petrol_rate, petrol_rate_auto, month, crumpled, month_end_date } = this.state;
     return (
@@ -623,6 +639,11 @@ export default class FuelBill extends Component {
               <button onClick={() => window.location.reload()} type="button" className="bg-btn bg-btn-primary">
                 Generate More
               </button>
+              {crumpled && (
+                <button onClick={this.handleDownloadImages} type="button" className="bg-btn" style={{ marginLeft: '10px', backgroundColor: '#28a745', color: '#fff' }}>
+                  Download as Image(s)
+                </button>
+              )}
             </div>
 
             {crumpled ? (

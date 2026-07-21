@@ -36787,8 +36787,8 @@ input[type="color"].form-control:disabled {
   position: absolute;
   /* Instead of blurring the old dark text (which creates dark grey smudges), 
      we lay down a solid paper-colored patch and feather the edges to blend it. */
-  background-color: #c8cbbb;
-  box-shadow: 0 0 6px 4px #c8cbbb;
+  background-color: #c5c8b8;
+  box-shadow: 0 0 6px 4px #c5c8b8;
   
   color: rgba(25, 30, 35, 0.9);
   padding: 0 0.2cqw;
