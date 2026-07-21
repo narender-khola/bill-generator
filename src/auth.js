@@ -1,4 +1,4 @@
-const CREDENTIAL_HASH = "d79df91a1470229781f8d97c97d378e7b71ea7564a59bee2b8afe45d1dc5012c";
+const CREDENTIAL_HASH = "529547a524fd53f49b7e2fde09c9c327b0ba0e3943c36bbf1f74e4a212dca66d";
 const STORAGE_KEY = "bg_auth";
 const TTL_MS = 30 * 24 * 60 * 60 * 1000;
 

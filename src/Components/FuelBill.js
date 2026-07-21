@@ -10,6 +10,64 @@ const HISTORY_KEYS = {
   amount: "fuel_amount",
 };
 
+const formatPaytmDate = (dateObj, timeStr) => {
+  if (!dateObj) return "20 Jul 2026, 04:05:44 PM";
+  const d = new Date(dateObj);
+  if (isNaN(d.getTime())) return "20 Jul 2026, 04:05:44 PM";
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = months[d.getMonth()];
+  const year = d.getFullYear();
+  let timeFormatted = timeStr || "04:05:44 PM";
+  if (timeFormatted && !timeFormatted.toUpperCase().includes("AM") && !timeFormatted.toUpperCase().includes("PM")) {
+    let parts = timeFormatted.split(":");
+    let h = parseInt(parts[0], 10);
+    let m = parseInt(parts[1], 10);
+    let s = parseInt(parts[2] || 0, 10);
+    if (!isNaN(h)) {
+      const ampm = h >= 12 ? "PM" : "AM";
+      h = h % 12 || 12;
+      timeFormatted = `${String(h).padStart(2, "0")}:${String(m || 0).padStart(2, "0")}:${String(s || 0).padStart(2, "0")} ${ampm}`;
+    }
+  }
+  return `${day} ${month} ${year}, ${timeFormatted}`;
+};
+
+const PaytmReceiptOverlay = ({ bill, position }) => {
+  if (!bill) return null;
+  const formattedDateStr = formatPaytmDate(bill.date, bill.time);
+  const authCode = bill.auth_code || "014969";
+  const rrn = bill.rrn || "620116865286";
+  const txnId1 = bill.paytm_txn1 || "20260720011090002859951";
+  const txnId2 = bill.paytm_txn2 || "74141286892";
+  const orderId1 = bill.paytm_order1 || "20260720160520002965";
+  const orderId2 = bill.paytm_order2 || "27204486";
+
+  return (
+    <div className={`paytm-overlay paytm-overlay-${position}`}>
+      <div className="paytm-patch paytm-patch-amount">₹{bill.amount}</div>
+      {/* First Auth Block (Under Payment Successful) is not present on this receipt format */}
+      
+      {/* Second Auth Block (Under HDFC Bank) */}
+      <div className="paytm-patch paytm-patch-auth2">Auth-Code : {authCode}</div>
+      <div className="paytm-patch paytm-patch-date2">{formattedDateStr}</div>
+      <div className="paytm-patch paytm-patch-rrn2">RRN - {rrn}</div>
+
+      <div className="paytm-patch paytm-patch-txn">
+        {txnId1}<br />{txnId2}
+      </div>
+      <div className="paytm-patch paytm-patch-order">
+        {orderId1}<br />{orderId2}
+      </div>
+      <div className="paytm-sample-stamp" aria-hidden="true">
+        <span>SAMPLE</span>
+        <small>NOT VALID</small>
+      </div>
+    </div>
+  );
+};
+
+
 const _currentMonth = () => {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
@@ -232,6 +290,19 @@ export default class FuelBill extends Component {
         fuel_station_logo: fuel_station.logo,
         fuel_station_name: fuel_station.organisation,
         fuel_station_address: fuel_address,
+        auth_code: String(this._generateRandomNumber(10000, 99999)),
+        rrn: `6201${this._generateRandomNumber(1000007, 9999999)}`,
+        paytm_txn1: `2026${fuel_value.date.replace(/-/g, "")}011${this._generateRandomNumber(10000000, 99999999)}`,
+        paytm_txn2: `7414${this._generateRandomNumber(1000000, 9999999)}`,
+        paytm_order1: `2026${fuel_value.date.replace(/-/g, "")}160${this._generateRandomNumber(100000, 999999)}`,
+        paytm_order2: `2720${this._generateRandomNumber(1000, 9999)}`,
+        card_no: `************${this._generateRandomNumber(1000, 9999)}`,
+        bank_mid: `5PR000001735416`,
+        bank_tid: `PA0${this._generateRandomNumber(50000, 59999)}`,
+        aid: `A00000000310${this._generateRandomNumber(10, 99)}`,
+        serial_no: `14930${this._generateRandomNumber(70000, 79999)}`,
+        mid: `Autoca09995316023309`,
+        tid: `2720${this._generateRandomNumber(4000, 4999)}`,
       });
       sum_amount += amount_arr[i];
       sum_ltrs += parseFloat(amount_arr[i] / fuel_value.rate);
@@ -366,6 +437,19 @@ export default class FuelBill extends Component {
         fuel_station_logo: fuel_station.logo,
         fuel_station_name: fuel_station.organisation,
         fuel_station_address: fuel_address,
+        auth_code: String(this._generateRandomNumber(10000, 99999)),
+        rrn: `6201${this._generateRandomNumber(1000007, 9999999)}`,
+        paytm_txn1: `2026${fuel_value.date.replace(/-/g, "")}011${this._generateRandomNumber(10000000, 99999999)}`,
+        paytm_txn2: `7414${this._generateRandomNumber(1000000, 9999999)}`,
+        paytm_order1: `2026${fuel_value.date.replace(/-/g, "")}160${this._generateRandomNumber(100000, 999999)}`,
+        paytm_order2: `2720${this._generateRandomNumber(1000, 9999)}`,
+        card_no: `************${this._generateRandomNumber(1000, 9999)}`,
+        bank_mid: `5PR000001735416`,
+        bank_tid: `PA0${this._generateRandomNumber(50000, 59999)}`,
+        aid: `A00000000310${this._generateRandomNumber(10, 99)}`,
+        serial_no: `14930${this._generateRandomNumber(70000, 79999)}`,
+        mid: `Autoca09995316023309`,
+        tid: `2720${this._generateRandomNumber(4000, 4999)}`,
       });
       sum_amount += amount_arr[i];
       sum_ltrs += parseFloat(amount_arr[i] / fuel_value.rate);
@@ -520,7 +604,7 @@ export default class FuelBill extends Component {
                   checked={crumpled}
                   onChange={(e) => this.setState({ crumpled: e.target.checked })}
                 />
-                <span>Crumpled receipts (look scanned)</span>
+                <span>Crumpled sample preview</span>
               </label>
             </div>
 
@@ -545,118 +629,145 @@ export default class FuelBill extends Component {
               </button>
             </div>
 
-            <div className={`fuel-print-grid ${crumpled ? "fuel-crumpled" : ""}`}>
-            {bills.map((bill, idx) => (
-              <div data-v-c7ff15a2="" className={`fuel-print-card ${crumpled ? `fuel-card-tilt-${idx % 5}` : ""}`} style={{ display: "inline-block", width: "260px", verticalAlign: "top" }}>
-                {/* <h5 data-v-c7ff15a2="" className="live-preview">
-              Live Preview
-            </h5> */}
-                <bills-100-template data-v-c7ff15a2="" template-id="3" bill-type="FUEL_RECEIPT" preview-data='{"cinSelected":null,"logoSelected":"1","fuel_station_name":"","fuel_address":"","fuel_rate":"","date":"2023-01-29T19:01:25.951Z","time":"0:31","customer_name":"","v_number":"","v_type":null,"payment_method":null,"total":"","cin":"M43010GH195260","email":"","invoice_id":"0505","telNo":"638072","fccId":"6912","fccNo":"30","nozzleNo":"4","filename":"Fuel Bill Template 3","mode":"EMAIL","mobile":"","density":"","dealer_name":""}' vce-ready="">
-                  <div id="app">
-                    <div id="app">
-                      <div></div>
-                      <div>
-                        <div data-v-6c875dfd="" className="newbody">
-                          <div data-v-6c875dfd="" className="background">
-                            <img data-v-6c875dfd="" src="https://bill-generator-assets.s3.ap-south-1.amazonaws.com/side-logo.png" alt="Bank Logo" className="sidelogo1" />
-                            <img data-v-6c875dfd="" src="https://bill-generator-assets.s3.ap-south-1.amazonaws.com/side-logo.png" alt="Bank Logo" className="sidelogo2" />
-                            <img data-v-6c875dfd="" src={bill.fuel_station_logo} alt="Logo" className="logo1" />
-                            <p data-v-6c875dfd="" className="top">
-                              WELCOME!!!
-                            </p>
-                            <p data-v-6c875dfd="" className="top" style={{ margin: "4px" }}></p>
-                            <p data-v-6c875dfd="" className="top">
-                              {bill.fuel_station_name}
-                            </p>
-                            <p data-v-6c875dfd="" className="top">
-                              {bill.fuel_station_address}
-                            </p>
-                            {/* <p data-v-6c875dfd="" className="top">BPCL</p> */}
-
-                            <div data-v-6c875dfd="" className="table1">
-                              <div data-v-6c875dfd="" className="table-element">
-                                <p data-v-6c875dfd="" style={{ margin: "4px" }}>
-                                  Receipt No.: {bill.txn_id}
-                                </p>
-                              </div>
-                            </div>
-                            <div data-v-6c875dfd="" className="table2">
-                              <div data-v-6c875dfd="" className="table-element">
-                                <p data-v-6c875dfd="" style={{ margin: "4px" }}>
-                                  PRODUCT: {bill.product}
-                                </p>
-                              </div>
-                              <div data-v-6c875dfd="" className="table-element">
-                                <p data-v-6c875dfd="" style={{ margin: "4px" }}>
-                                  RATE/LTR: ₹ {bill.rate}
-                                </p>
-                              </div>
-                              <div data-v-6c875dfd="" className="table-element">
-                                <p data-v-6c875dfd="" style={{ margin: "4px" }}>
-                                  AMOUNT: ₹ {bill.amount}
-                                </p>
-                              </div>
-                              <div data-v-6c875dfd="" className="table-element">
-                                <p data-v-6c875dfd="" style={{ margin: "4px" }}>
-                                  VOLUME(LTR.): lt {bill.ltr}
-                                </p>
-                              </div>
-                            </div>
-                            <div data-v-6c875dfd="" className="table1">
-                              <div data-v-6c875dfd="" className="table-element">
-                                <p data-v-6c875dfd="" style={{ margin: "4px" }}>
-                                  BAY No: {bill.bay_no}
-                                </p>
-                              </div>
-                              <div data-v-6c875dfd="" className="table-element">
-                                <p data-v-6c875dfd="" style={{ margin: "4px" }}>
-                                  NOZZLE NO: {bill.nozzle_no}
-                                </p>
-                              </div>
-                              <div data-v-6c875dfd="" className="table-element">
-                                <p data-v-6c875dfd="" style={{ margin: "4px" }}>
-                                  TXN ID: {bill.txn_id}
-                                </p>
-                              </div>
-                              <div data-v-6c875dfd="" className="table-element">
-                                <p data-v-6c875dfd="" style={{ margin: "4px" }}>
-                                  TXN ST: {bill.txnSt}
-                                </p>
-                              </div>
-                              <div data-v-6c875dfd="" className="table-element">
-                                <p data-v-6c875dfd="" style={{ margin: "4px" }}>
-                                  TXN END: {bill.txnEnd}
-                                </p>
-                              </div>
-                            </div>
-                            <div data-v-6c875dfd="" className="table-element">
-                              <p data-v-6c875dfd="" style={{ margin: "4px" }}>
-                                Date: {bill.date.toLocaleDateString()}
-                              </p>
-                              <p data-v-6c875dfd=""> Time: {bill.time}</p>
-                            </div>
-                            <div data-v-6c875dfd="" className="table-element">
-                              <p data-v-6c875dfd="" style={{ margin: "4px" }}>
-                                MODE: {bill.paymode}
-                              </p>
-                            </div>
-                            <p data-v-6c875dfd="" className="bottom">
-                              SAVE FUEL YAANI SAVE MONEY !! THANKS FOR FUELLING WITH US. YOU CAN NOW CALL US ON 1800 226344 (TOLL-FREE) FOR QUERIES/COMPLAINTS.
-                            </p>
-                          </div>
+            {crumpled ? (
+              <div className="fuel-crumpled-pages-wrapper">
+                {Array.from({ length: Math.ceil(bills.length / 2) }).map((_, pageIdx) => {
+                  const billLeft = bills[pageIdx * 2];
+                  const billRight = bills[pageIdx * 2 + 1];
+                  return (
+                    <div className="fuel-crumpled-photo-page" key={pageIdx}>
+                      <div className="fuel-crumpled-bg-wrapper">
+                        <img
+                          src={process.env.PUBLIC_URL + "/images/crumpled_base.jpeg"}
+                          alt="Crumpled sample preview"
+                          className="fuel-crumpled-bg-img"
+                        />
+                        {billLeft && <PaytmReceiptOverlay bill={billLeft} position="left" />}
+                        {billRight && <PaytmReceiptOverlay bill={billRight} position="right" />}
+                        <div className="fuel-sample-watermark" aria-hidden="true">
+                          <span>SAMPLE</span>
+                          <small>NOT VALID FOR PAYMENT OR REIMBURSEMENT</small>
+                        </div>
+                        <div className="fuel-sample-repeat-watermark" aria-hidden="true">
+                          {Array.from({ length: 8 }, (_, index) => (
+                            <span key={index}>DEMO · NOT VALID</span>
+                          ))}
                         </div>
                       </div>
-                      <footer>
-                        <div className="container">
-                          <div className="row"></div>
-                        </div>
-                      </footer>
                     </div>
-                  </div>
-                </bills-100-template>
+                  );
+                })}
               </div>
-            ))}
-            </div>
+            ) : (
+              <div className="fuel-print-grid">
+                {bills.map((bill, idx) => (
+                  <div key={idx} data-v-c7ff15a2="" className="fuel-print-card" style={{ display: "inline-block", width: "260px", verticalAlign: "top" }}>
+                    <bills-100-template data-v-c7ff15a2="" template-id="3" bill-type="FUEL_RECEIPT" preview-data='{"cinSelected":null,"logoSelected":"1","fuel_station_name":"","fuel_address":"","fuel_rate":"","date":"2023-01-29T19:01:25.951Z","time":"0:31","customer_name":"","v_number":"","v_type":null,"payment_method":null,"total":"","cin":"M43010GH195260","email":"","invoice_id":"0505","telNo":"638072","fccId":"6912","fccNo":"30","nozzleNo":"4","filename":"Fuel Bill Template 3","mode":"EMAIL","mobile":"","density":"","dealer_name":""}' vce-ready="">
+                      <div id="app">
+                        <div id="app">
+                          <div></div>
+                          <div>
+                            <div data-v-6c875dfd="" className="newbody">
+                              <div data-v-6c875dfd="" className="background">
+                                <img data-v-6c875dfd="" src="https://bill-generator-assets.s3.ap-south-1.amazonaws.com/side-logo.png" alt="Bank Logo" className="sidelogo1" />
+                                <img data-v-6c875dfd="" src="https://bill-generator-assets.s3.ap-south-1.amazonaws.com/side-logo.png" alt="Bank Logo" className="sidelogo2" />
+                                <img data-v-6c875dfd="" src={bill.fuel_station_logo} alt="Logo" className="logo1" />
+                                <p data-v-6c875dfd="" className="top">
+                                  WELCOME!!!
+                                </p>
+                                <p data-v-6c875dfd="" className="top" style={{ margin: "4px" }}></p>
+                                <p data-v-6c875dfd="" className="top">
+                                  {bill.fuel_station_name}
+                                </p>
+                                <p data-v-6c875dfd="" className="top">
+                                  {bill.fuel_station_address}
+                                </p>
+
+                                <div data-v-6c875dfd="" className="table1">
+                                  <div data-v-6c875dfd="" className="table-element">
+                                    <p data-v-6c875dfd="" style={{ margin: "4px" }}>
+                                      Receipt No.: {bill.txn_id}
+                                    </p>
+                                  </div>
+                                </div>
+                                <div data-v-6c875dfd="" className="table2">
+                                  <div data-v-6c875dfd="" className="table-element">
+                                    <p data-v-6c875dfd="" style={{ margin: "4px" }}>
+                                      PRODUCT: {bill.product}
+                                    </p>
+                                  </div>
+                                  <div data-v-6c875dfd="" className="table-element">
+                                    <p data-v-6c875dfd="" style={{ margin: "4px" }}>
+                                      RATE/LTR: ₹ {bill.rate}
+                                    </p>
+                                  </div>
+                                  <div data-v-6c875dfd="" className="table-element">
+                                    <p data-v-6c875dfd="" style={{ margin: "4px" }}>
+                                      AMOUNT: ₹ {bill.amount}
+                                    </p>
+                                  </div>
+                                  <div data-v-6c875dfd="" className="table-element">
+                                    <p data-v-6c875dfd="" style={{ margin: "4px" }}>
+                                      VOLUME(LTR.): lt {bill.ltr}
+                                    </p>
+                                  </div>
+                                </div>
+                                <div data-v-6c875dfd="" className="table1">
+                                  <div data-v-6c875dfd="" className="table-element">
+                                    <p data-v-6c875dfd="" style={{ margin: "4px" }}>
+                                      BAY No: {bill.bay_no}
+                                    </p>
+                                  </div>
+                                  <div data-v-6c875dfd="" className="table-element">
+                                    <p data-v-6c875dfd="" style={{ margin: "4px" }}>
+                                      NOZZLE NO: {bill.nozzle_no}
+                                    </p>
+                                  </div>
+                                  <div data-v-6c875dfd="" className="table-element">
+                                    <p data-v-6c875dfd="" style={{ margin: "4px" }}>
+                                      TXN ID: {bill.txn_id}
+                                    </p>
+                                  </div>
+                                  <div data-v-6c875dfd="" className="table-element">
+                                    <p data-v-6c875dfd="" style={{ margin: "4px" }}>
+                                      TXN ST: {bill.txnSt}
+                                    </p>
+                                  </div>
+                                  <div data-v-6c875dfd="" className="table-element">
+                                    <p data-v-6c875dfd="" style={{ margin: "4px" }}>
+                                      TXN END: {bill.txnEnd}
+                                    </p>
+                                  </div>
+                                </div>
+                                <div data-v-6c875dfd="" className="table-element">
+                                  <p data-v-6c875dfd="" style={{ margin: "4px" }}>
+                                    Date: {bill.date.toLocaleDateString()}
+                                  </p>
+                                  <p data-v-6c875dfd=""> Time: {bill.time}</p>
+                                </div>
+                                <div data-v-6c875dfd="" className="table-element">
+                                  <p data-v-6c875dfd="" style={{ margin: "4px" }}>
+                                    MODE: {bill.paymode}
+                                  </p>
+                                </div>
+                                <p data-v-6c875dfd="" className="bottom">
+                                  SAVE FUEL YAANI SAVE MONEY !! THANKS FOR FUELLING WITH US. YOU CAN NOW CALL US ON 1800 226344 (TOLL-FREE) FOR QUERIES/COMPLAINTS.
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                          <footer>
+                            <div className="container">
+                              <div className="row"></div>
+                            </div>
+                          </footer>
+                        </div>
+                      </div>
+                    </bills-100-template>
+                  </div>
+                ))}
+              </div>
+            )}
           </>
         )}
       </div>

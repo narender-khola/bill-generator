@@ -36630,4 +36630,256 @@ input[type="color"].form-control:disabled {
   .fuel-crumpled .fuel-print-card {
     filter: drop-shadow(0.8px 1.4px 2px rgba(0, 0, 0, 0.16));
   }
+
+  /* Crumpled mode prints 2 receipts per page instead of the default 4-up grid */
+  .fuel-crumpled .fuel-print-card {
+    width: 50% !important;
+    padding: 0 6mm !important;
+    margin: 8mm 0 !important;
+  }
+  /* Break after every second card so each sheet holds exactly two */
+  .fuel-crumpled .fuel-print-card:nth-of-type(2n) {
+    page-break-after: always;
+    break-after: page;
+  }
+  /* ...but never trail a blank sheet after the last one */
+  .fuel-crumpled .fuel-print-card:last-of-type {
+    page-break-after: auto;
+    break-after: auto;
+  }
+  .fuel-crumpled .fuel-print-card .logo1[data-v-6c875dfd] {
+    width: 96px !important;
+    height: 96px !important;
+  }
+}
+
+/* === Paytm Crumpled Photo Base Styles === */
+.fuel-crumpled-pages-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  margin: 20px 0;
+}
+
+.fuel-crumpled-photo-page {
+  width: 100%;
+  max-width: 900px;
+  background: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  position: relative;
+}
+
+.fuel-crumpled-bg-wrapper {
+  position: relative;
+  width: 100%;
+  container-type: inline-size;
+  container-name: crumpled-page;
+}
+
+.fuel-crumpled-bg-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Deliberately permanent: scanned previews must remain visibly non-documentary. */
+.fuel-sample-watermark {
+  position: absolute;
+  top: 2.1cqw;
+  right: 2.1cqw;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2cqw;
+  padding: 0.9cqw 1.15cqw 0.8cqw;
+  color: #a31515;
+  border: 0.25cqw solid currentColor;
+  border-radius: 0.35cqw;
+  background: rgba(255, 253, 249, 0.92);
+  box-shadow: 0 0.18cqw 0.55cqw rgba(55, 19, 19, 0.14);
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 900;
+  text-align: center;
+  letter-spacing: 0.16em;
+  pointer-events: none;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.fuel-sample-watermark span {
+  padding-left: 0.16em;
+  font-size: clamp(13px, 2.15cqw, 26px);
+  line-height: 1;
+}
+
+.fuel-sample-watermark small {
+  padding-left: 0.16em;
+  font-size: clamp(6px, 0.74cqw, 9px);
+  line-height: 1.15;
+}
+
+/* Repeated across the full image so a cropped card remains visibly a demo. */
+.fuel-sample-repeat-watermark {
+  position: absolute;
+  inset: -18% -12%;
+  z-index: 9;
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
+  grid-auto-rows: min-content;
+  align-content: space-evenly;
+  justify-content: space-evenly;
+  gap: 8cqw 15cqw;
+  color: rgba(164, 19, 19, 0.58);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(12px, 1.65cqw, 22px);
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  line-height: 1;
+  pointer-events: none;
+  transform: rotate(-26deg);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.fuel-sample-repeat-watermark span {
+  padding: 0.35cqw 0.55cqw 0.3cqw 0.75cqw;
+  border: 0.13cqw solid currentColor;
+  background: rgba(255, 252, 247, 0.38);
+}
+
+.paytm-overlay {
+  position: absolute;
+  z-index: 5;
+  background-color: transparent;
+  color: rgba(26, 30, 36, 0.9);
+  font-family: 'Roboto Mono', 'Courier New', Courier, monospace;
+  box-sizing: border-box;
+  padding: 1.1cqw 1cqw 1cqw 1cqw;
+  overflow: hidden;
+  line-height: 1.22;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.paytm-overlay-left {
+  top: 21.8%;
+  left: 26.5%;
+  width: 17.8%;
+  height: 51.2%;
+  transform: rotate(-1.6deg);
+}
+
+.paytm-overlay-right {
+  top: 22.8%;
+  left: 56.3%;
+  width: 17.6%;
+  height: 51.2%;
+  transform: rotate(0.4deg);
+}
+
+.paytm-patch {
+  position: absolute;
+  /* Use a smart blur and brightening filter to smudge the old ink into the paper color seamlessly */
+  backdrop-filter: blur(8px) brightness(1.1);
+  -webkit-backdrop-filter: blur(8px) brightness(1.1);
+  background-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 4px 4px rgba(255, 255, 255, 0.1);
+  
+  color: rgba(25, 30, 35, 0.9);
+  padding: 0 0.2cqw;
+  border-radius: 3px;
+  line-height: 1.2;
+  z-index: 2;
+  text-shadow: 0px 0px 0.2px rgba(0,0,0,0.2);
+}
+
+/* Base styling */
+.paytm-patch-amount { left: 50%; transform: translateX(-50%); font-size: 1.55cqw; font-weight: 800; }
+.paytm-patch-auth1 { left: 50%; transform: translateX(-50%); font-size: 0.74cqw; font-weight: 600; top: 22%; }
+.paytm-patch-date1 { left: 50%; transform: translateX(-50%); font-size: 0.74cqw; font-weight: 600; top: 24.5%; }
+.paytm-patch-rrn1 { left: 50%; transform: translateX(-50%); font-size: 0.74cqw; font-weight: 600; top: 27%; }
+.paytm-patch-auth2 { left: 50%; transform: translateX(-50%); font-size: 0.74cqw; font-weight: 600; }
+.paytm-patch-date2 { left: 50%; transform: translateX(-50%); font-size: 0.74cqw; font-weight: 600; }
+.paytm-patch-rrn2 { left: 50%; transform: translateX(-50%); font-size: 0.74cqw; font-weight: 600; }
+.paytm-patch-txn { right: 1.5cqw; text-align: right; font-size: 0.7cqw; font-weight: 600; }
+.paytm-patch-order { right: 1.5cqw; text-align: right; font-size: 0.7cqw; font-weight: 600; }
+
+/* Left Receipt Specific Coordinates (Has large gaps) */
+.paytm-overlay-left .paytm-patch-amount { top: 20%; transform: translateX(-50%) rotate(1.5deg); }
+.paytm-overlay-left .paytm-patch-auth1 { top: 22.5%; }
+.paytm-overlay-left .paytm-patch-date1 { top: 25.5%; }
+.paytm-overlay-left .paytm-patch-rrn1 { top: 28.5%; }
+.paytm-overlay-left .paytm-patch-auth2 { top: 39%; transform: translateX(-50%) rotate(1.5deg); }
+.paytm-overlay-left .paytm-patch-date2 { top: 42%; width: 100px; transform: translateX(-50%) rotate(1.5deg); }
+.paytm-overlay-left .paytm-patch-rrn2 { top: 44.5%; font-size: 6px; transform: translateX(-50%) rotate(1.5deg); }
+.paytm-overlay-left .paytm-patch-txn { top: 51.5%; width: 90px; font-size: 6px; transform: rotate(1.5deg); }
+.paytm-overlay-left .paytm-patch-order { top: 56.5%; width: 80px; font-size: 6px; right: 1.3cqw; transform: rotate(1.5deg); }
+
+/* Right Receipt Specific Coordinates (Has tight gaps) */
+.paytm-overlay-right .paytm-patch-amount { top: 19%; }
+.paytm-overlay-right .paytm-patch-auth1 { top: 21.5%; }
+.paytm-overlay-right .paytm-patch-date1 { top: 24%; }
+.paytm-overlay-right .paytm-patch-rrn1 { top: 27%; }
+.paytm-overlay-right .paytm-patch-auth2 { top: 38%; }
+.paytm-overlay-right .paytm-patch-date2 { top: 41%; width: 100px; }
+.paytm-overlay-right .paytm-patch-rrn2 { top: 44%; }
+.paytm-overlay-right .paytm-patch-txn { top: 50.5%; width: 90px; font-size: 6px; }
+.paytm-overlay-right .paytm-patch-order { top: 55.5%; width: 80px; font-size: 6px; right: 1.3cqw; }
+
+.paytm-sample-stamp {
+  position: absolute;
+  left: 50%;
+  bottom: 2.5%;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 45%;
+  padding: 0.25cqw 0.5cqw;
+  color: rgba(163, 21, 21, 0.86);
+  border: 0.17cqw solid currentColor;
+  background: rgba(255, 252, 247, 0.7);
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  pointer-events: none;
+  transform: translateX(-50%) rotate(-8deg);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.paytm-sample-stamp span {
+  padding-left: 0.12em;
+  font-size: 0.78cqw;
+}
+
+.paytm-sample-stamp small {
+  padding-left: 0.12em;
+  font-size: 0.36cqw;
+}
+
+@media print {
+  .fuel-crumpled-pages-wrapper {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .fuel-crumpled-photo-page {
+    max-width: none !important;
+    width: 100% !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+  .fuel-crumpled-photo-page:last-of-type {
+    page-break-after: auto !important;
+    break-after: auto !important;
+  }
 }
