@@ -36675,13 +36675,15 @@ input[type="color"].form-control:disabled {
 .fuel-crumpled-bg-wrapper {
   position: relative;
   width: 100%;
+  aspect-ratio: 4 / 3;
   container-type: inline-size;
   container-name: crumpled-page;
+  margin: 0 auto;
 }
 
 .fuel-crumpled-bg-img {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
 }
 
@@ -36783,11 +36785,10 @@ input[type="color"].form-control:disabled {
 
 .paytm-patch {
   position: absolute;
-  /* Use a smart blur and brightening filter to smudge the old ink into the paper color seamlessly */
-  backdrop-filter: blur(8px) brightness(1.1);
-  -webkit-backdrop-filter: blur(8px) brightness(1.1);
-  background-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 4px 4px rgba(255, 255, 255, 0.1);
+  /* Instead of blurring the old dark text (which creates dark grey smudges), 
+     we lay down a solid paper-colored patch and feather the edges to blend it. */
+  background-color: #c8cbbb;
+  box-shadow: 0 0 6px 4px #c8cbbb;
   
   color: rgba(25, 30, 35, 0.9);
   padding: 0 0.2cqw;
@@ -36864,19 +36865,49 @@ input[type="color"].form-control:disabled {
 }
 
 @media print {
+  @page {
+    size: landscape;
+    margin: 0;
+  }
+  body, .container {
+    min-width: 0 !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
   .fuel-crumpled-pages-wrapper {
     display: block !important;
+    width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
   }
   .fuel-crumpled-photo-page {
-    max-width: none !important;
-    width: 100% !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    width: 100vw !important;
+    height: 100vh !important;
     margin: 0 !important;
     border-radius: 0 !important;
     box-shadow: none !important;
+    page-break-inside: avoid !important;
     page-break-after: always !important;
     break-after: page !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+  .fuel-crumpled-bg-wrapper {
+    width: 100vw !important;
+    height: 75vw !important;
+    max-width: 133.33vh !important;
+    max-height: 100vh !important;
+    aspect-ratio: 4 / 3 !important;
+    margin: 0 auto !important;
+  }
+  .fuel-crumpled-bg-img {
+    width: 100% !important;
+    height: 100% !important;
   }
   .fuel-crumpled-photo-page:last-of-type {
     page-break-after: auto !important;

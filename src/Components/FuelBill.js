@@ -59,10 +59,6 @@ const PaytmReceiptOverlay = ({ bill, position }) => {
       <div className="paytm-patch paytm-patch-order">
         {orderId1}<br />{orderId2}
       </div>
-      <div className="paytm-sample-stamp" aria-hidden="true">
-        <span>SAMPLE</span>
-        <small>NOT VALID</small>
-      </div>
     </div>
   );
 };
@@ -644,15 +640,6 @@ export default class FuelBill extends Component {
                         />
                         {billLeft && <PaytmReceiptOverlay bill={billLeft} position="left" />}
                         {billRight && <PaytmReceiptOverlay bill={billRight} position="right" />}
-                        <div className="fuel-sample-watermark" aria-hidden="true">
-                          <span>SAMPLE</span>
-                          <small>NOT VALID FOR PAYMENT OR REIMBURSEMENT</small>
-                        </div>
-                        <div className="fuel-sample-repeat-watermark" aria-hidden="true">
-                          {Array.from({ length: 8 }, (_, index) => (
-                            <span key={index}>DEMO · NOT VALID</span>
-                          ))}
-                        </div>
                       </div>
                     </div>
                   );
