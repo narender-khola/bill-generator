@@ -15137,7 +15137,7 @@ input[type="button"].btn-block {
   min-height: 1.5rem;
   padding-left: 1.5rem;
   -webkit-print-color-adjust: exact;
-  color-adjust: exact;
+  print-color-adjust: exact;
 }
 
 .custom-control-inline {
@@ -27765,7 +27765,7 @@ input[type="submit"].btn-block {
   min-height: 1.5rem;
   padding-left: 1.5rem;
   -webkit-print-color-adjust: exact;
-  color-adjust: exact;
+  print-color-adjust: exact;
 }
 .custom-control-inline {
   display: inline-flex;
@@ -36788,7 +36788,7 @@ input[type="color"].form-control:disabled {
   /* Instead of blurring the old dark text (which creates dark grey smudges), 
      we lay down a solid paper-colored patch and feather the edges to blend it. */
   background-color: #c5c8b8;
-  box-shadow: 0 0 6px 4px #c5c8b8;
+  box-shadow: 0 0 3px 3px #c5c8b8;
   
   color: rgba(25, 30, 35, 0.9);
   padding: 0 0.2cqw;
@@ -36865,10 +36865,6 @@ input[type="color"].form-control:disabled {
 }
 
 @media print {
-  @page {
-    size: landscape;
-    margin: 0;
-  }
   body, .container {
     min-width: 0 !important;
     width: 100vw !important;
@@ -36914,3 +36910,64 @@ input[type="color"].form-control:disabled {
     break-after: auto !important;
   }
 }
+
+/* 58mm Thermal Printer Layout */
+.thermal-58mm {
+  width: 58mm;
+  background: white;
+  color: black;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 11px;
+  line-height: 1.2;
+  margin: 10px auto;
+  padding: 5mm;
+  box-sizing: border-box;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+@media print {
+  .thermal-58mm {
+    border: none;
+    margin: 0;
+    padding: 0;
+    page-break-after: always;
+    break-after: page;
+  }
+}
+.thermal-receipt-body {
+  width: 100%;
+}
+.thermal-logo-container {
+  text-align: center;
+  margin-bottom: 5px;
+}
+.thermal-logo {
+  max-width: 60px;
+  filter: grayscale(100%);
+  margin-bottom: 2px;
+}
+.thermal-brand-name {
+  font-size: 13px;
+  font-weight: bold;
+}
+.thermal-header {
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 10px;
+}
+.thermal-details {
+  display: flex;
+  flex-direction: column;
+}
+.thermal-row {
+  display: flex;
+}
+.thermal-label {
+  width: 65px;
+  flex-shrink: 0;
+}
+.thermal-val {
+  flex-grow: 1;
+  word-break: break-all;
+}
+

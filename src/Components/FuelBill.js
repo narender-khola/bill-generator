@@ -186,7 +186,7 @@ export default class FuelBill extends Component {
     for (let i = 0; i < parseInt(total_number_of_bills / 2); i++) {
       let ei = total_number_of_bills - 1 - i;
       let diff = this._generateRandomNumber(0, 500);
-      if (i % 2 == 0) {
+      if (i % 2 === 0) {
         amount_arr[i] = mean - diff;
         amount_arr[ei] = mean + diff;
       } else {
@@ -495,7 +495,7 @@ export default class FuelBill extends Component {
   };
 
   render() {
-    const { fuel_data, address, amount, mean, receipt_no, bills, pdf_view, total_number_of_bills, sum_amount, sum_ltrs, month_mode, number_of_bills, petrol_rate, petrol_rate_auto, month, crumpled, month_end_date } = this.state;
+    const { amount, mean, bills, pdf_view, total_number_of_bills, sum_amount, sum_ltrs, month_mode, number_of_bills, petrol_rate, petrol_rate_auto, month, crumpled, month_end_date } = this.state;
     return (
       <div className="">
         {!pdf_view ? (
@@ -648,6 +648,11 @@ export default class FuelBill extends Component {
 
             {crumpled ? (
               <div className="fuel-crumpled-pages-wrapper">
+                <style>{`
+                  @media print {
+                    @page { size: landscape; margin: 0; }
+                  }
+                `}</style>
                 {Array.from({ length: Math.ceil(bills.length / 2) }).map((_, pageIdx) => {
                   const billLeft = bills[pageIdx * 2];
                   const billRight = bills[pageIdx * 2 + 1];
@@ -668,112 +673,99 @@ export default class FuelBill extends Component {
               </div>
             ) : (
               <div className="fuel-print-grid">
-                {bills.map((bill, idx) => (
-                  <div key={idx} data-v-c7ff15a2="" className="fuel-print-card" style={{ display: "inline-block", width: "260px", verticalAlign: "top" }}>
-                    <bills-100-template data-v-c7ff15a2="" template-id="3" bill-type="FUEL_RECEIPT" preview-data='{"cinSelected":null,"logoSelected":"1","fuel_station_name":"","fuel_address":"","fuel_rate":"","date":"2023-01-29T19:01:25.951Z","time":"0:31","customer_name":"","v_number":"","v_type":null,"payment_method":null,"total":"","cin":"M43010GH195260","email":"","invoice_id":"0505","telNo":"638072","fccId":"6912","fccNo":"30","nozzleNo":"4","filename":"Fuel Bill Template 3","mode":"EMAIL","mobile":"","density":"","dealer_name":""}' vce-ready="">
-                      <div id="app">
-                        <div id="app">
-                          <div></div>
-                          <div>
-                            <div data-v-6c875dfd="" className="newbody">
-                              <div data-v-6c875dfd="" className="background">
-                                <img data-v-6c875dfd="" src="https://bill-generator-assets.s3.ap-south-1.amazonaws.com/side-logo.png" alt="Bank Logo" className="sidelogo1" />
-                                <img data-v-6c875dfd="" src="https://bill-generator-assets.s3.ap-south-1.amazonaws.com/side-logo.png" alt="Bank Logo" className="sidelogo2" />
-                                <img data-v-6c875dfd="" src={bill.fuel_station_logo} alt="Logo" className="logo1" />
-                                <p data-v-6c875dfd="" className="top">
-                                  WELCOME!!!
-                                </p>
-                                <p data-v-6c875dfd="" className="top" style={{ margin: "4px" }}></p>
-                                <p data-v-6c875dfd="" className="top">
-                                  {bill.fuel_station_name}
-                                </p>
-                                <p data-v-6c875dfd="" className="top">
-                                  {bill.fuel_station_address}
-                                </p>
-
-                                <div data-v-6c875dfd="" className="table1">
-                                  <div data-v-6c875dfd="" className="table-element">
-                                    <p data-v-6c875dfd="" style={{ margin: "4px" }}>
-                                      Receipt No.: {bill.txn_id}
-                                    </p>
-                                  </div>
-                                </div>
-                                <div data-v-6c875dfd="" className="table2">
-                                  <div data-v-6c875dfd="" className="table-element">
-                                    <p data-v-6c875dfd="" style={{ margin: "4px" }}>
-                                      PRODUCT: {bill.product}
-                                    </p>
-                                  </div>
-                                  <div data-v-6c875dfd="" className="table-element">
-                                    <p data-v-6c875dfd="" style={{ margin: "4px" }}>
-                                      RATE/LTR: ₹ {bill.rate}
-                                    </p>
-                                  </div>
-                                  <div data-v-6c875dfd="" className="table-element">
-                                    <p data-v-6c875dfd="" style={{ margin: "4px" }}>
-                                      AMOUNT: ₹ {bill.amount}
-                                    </p>
-                                  </div>
-                                  <div data-v-6c875dfd="" className="table-element">
-                                    <p data-v-6c875dfd="" style={{ margin: "4px" }}>
-                                      VOLUME(LTR.): lt {bill.ltr}
-                                    </p>
-                                  </div>
-                                </div>
-                                <div data-v-6c875dfd="" className="table1">
-                                  <div data-v-6c875dfd="" className="table-element">
-                                    <p data-v-6c875dfd="" style={{ margin: "4px" }}>
-                                      BAY No: {bill.bay_no}
-                                    </p>
-                                  </div>
-                                  <div data-v-6c875dfd="" className="table-element">
-                                    <p data-v-6c875dfd="" style={{ margin: "4px" }}>
-                                      NOZZLE NO: {bill.nozzle_no}
-                                    </p>
-                                  </div>
-                                  <div data-v-6c875dfd="" className="table-element">
-                                    <p data-v-6c875dfd="" style={{ margin: "4px" }}>
-                                      TXN ID: {bill.txn_id}
-                                    </p>
-                                  </div>
-                                  <div data-v-6c875dfd="" className="table-element">
-                                    <p data-v-6c875dfd="" style={{ margin: "4px" }}>
-                                      TXN ST: {bill.txnSt}
-                                    </p>
-                                  </div>
-                                  <div data-v-6c875dfd="" className="table-element">
-                                    <p data-v-6c875dfd="" style={{ margin: "4px" }}>
-                                      TXN END: {bill.txnEnd}
-                                    </p>
-                                  </div>
-                                </div>
-                                <div data-v-6c875dfd="" className="table-element">
-                                  <p data-v-6c875dfd="" style={{ margin: "4px" }}>
-                                    Date: {bill.date.toLocaleDateString()}
-                                  </p>
-                                  <p data-v-6c875dfd=""> Time: {bill.time}</p>
-                                </div>
-                                <div data-v-6c875dfd="" className="table-element">
-                                  <p data-v-6c875dfd="" style={{ margin: "4px" }}>
-                                    MODE: {bill.paymode}
-                                  </p>
-                                </div>
-                                <p data-v-6c875dfd="" className="bottom">
-                                  SAVE FUEL YAANI SAVE MONEY !! THANKS FOR FUELLING WITH US. YOU CAN NOW CALL US ON 1800 226344 (TOLL-FREE) FOR QUERIES/COMPLAINTS.
-                                </p>
-                              </div>
-                            </div>
+                <style>{`
+                  @media print {
+                    @page { size: 58mm auto; margin: 0; }
+                    body, html { width: 58mm !important; margin: 0 !important; padding: 0 !important; }
+                    .container { min-width: 0 !important; width: 58mm !important; padding: 0 !important; margin: 0 !important; }
+                    .fuel-print-grid { width: 58mm !important; margin: 0 !important; padding: 0 !important; }
+                  }
+                `}</style>
+                {bills.map((bill, idx) => {
+                  let formattedDate = "";
+                  try {
+                    formattedDate = new Date(bill.date).toLocaleDateString('en-GB', {
+                      day: '2-digit', month: '2-digit', year: '2-digit'
+                    });
+                  } catch (e) {
+                    formattedDate = bill.date;
+                  }
+                  
+                  return (
+                    <div key={idx} className="thermal-58mm">
+                      <div className="thermal-receipt-body">
+                        <div className="thermal-logo-container">
+                          <img src={bill.fuel_station_logo} alt="Logo" className="thermal-logo" />
+                          <div className="thermal-brand-name">{bill.fuel_station_name}</div>
+                        </div>
+                        <div className="thermal-header">
+                          <div>{bill.fuel_station_address.split(',')[0] || "NH 8 GGN."}</div>
+                          <div>TIN.06463800124</div>
+                          <div>PH 9212529333</div>
+                        </div>
+                        
+                        <div className="thermal-details">
+                          <div className="thermal-row">
+                            <span className="thermal-label">Bill No</span>
+                            <span className="thermal-val">:{bill.txn_id}-ORGNL</span>
                           </div>
-                          <footer>
-                            <div className="container">
-                              <div className="row"></div>
-                            </div>
-                          </footer>
+                          <div className="thermal-row">
+                            <span className="thermal-label">Trns.ID</span>
+                            <span className="thermal-val">:0000000000006365</span>
+                          </div>
+                          <div className="thermal-row">
+                            <span className="thermal-label">Atnd.ID</span>
+                            <span className="thermal-val">:</span>
+                          </div>
+                          <div className="thermal-row">
+                            <span className="thermal-label">Vehi.No</span>
+                            <span className="thermal-val">:NotEntered</span>
+                          </div>
+                          <div className="thermal-row">
+                            <span className="thermal-label">Date</span>
+                            <span className="thermal-val">:{formattedDate}</span>
+                          </div>
+                          <div className="thermal-row">
+                            <span className="thermal-label">Time</span>
+                            <span className="thermal-val">:{bill.time}</span>
+                          </div>
+                          <div className="thermal-row">
+                            <span className="thermal-label">FP. ID</span>
+                            <span className="thermal-val">:{bill.bay_no}</span>
+                          </div>
+                          <div className="thermal-row">
+                            <span className="thermal-label">Nozl No</span>
+                            <span className="thermal-val">:{bill.nozzle_no}</span>
+                          </div>
+                          <div className="thermal-row">
+                            <span className="thermal-label">Fuel</span>
+                            <span className="thermal-val">:</span>
+                          </div>
+                          <div className="thermal-row">
+                            <span className="thermal-label">Density</span>
+                            <span className="thermal-val">:746.5kg/m3</span>
+                          </div>
+                          <div className="thermal-row">
+                            <span className="thermal-label">Preset</span>
+                            <span className="thermal-val">:99L</span>
+                          </div>
+                          <div className="thermal-row">
+                            <span className="thermal-label">Rate</span>
+                            <span className="thermal-val">:Rs.{bill.rate}</span>
+                          </div>
+                          <div className="thermal-row">
+                            <span className="thermal-label">Sale</span>
+                            <span className="thermal-val">:Rs.{bill.amount}</span>
+                          </div>
+                          <div className="thermal-row">
+                            <span className="thermal-label">Volume</span>
+                            <span className="thermal-val">:{bill.ltr}L</span>
+                          </div>
                         </div>
                       </div>
-                    </bills-100-template>
-                  </div>
-                ))}
+                    </div>
+                  );
+                })}
               </div>
             )}
           </>
