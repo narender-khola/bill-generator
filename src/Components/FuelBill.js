@@ -481,6 +481,35 @@ export default class FuelBill extends Component {
     // this._sanitizeFuelData();
   }
 
+  processCanvasTo1Bit = (canvas) => {
+    const ctx = canvas.getContext('2d');
+    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imgData.data;
+    
+    // Threshold value (0-255). 200 retains thick sharp text while removing light gray noise.
+    const threshold = 200; 
+    
+    for (let i = 0; i < data.length; i += 4) {
+      // If pixel is transparent, force it to white to avoid black background boxes on logos
+      if (data[i + 3] < 128) {
+        data[i] = 255;     // R
+        data[i + 1] = 255; // G
+        data[i + 2] = 255; // B
+        data[i + 3] = 255; // A
+      } else {
+        // Luminance calculation
+        const avg = (data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114);
+        const color = avg > threshold ? 255 : 0;
+        
+        data[i] = color;
+        data[i + 1] = color;
+        data[i + 2] = color;
+        data[i + 3] = 255; // Force fully opaque
+      }
+    }
+    ctx.putImageData(imgData, 0, 0);
+  };
+
   handleDownloadImages = async () => {
     const pages = document.querySelectorAll('.fuel-crumpled-photo-page');
     for (let i = 0; i < pages.length; i++) {
@@ -514,8 +543,12 @@ export default class FuelBill extends Component {
           format: [58, heightInMm]
         });
 
-        // Use html2canvas for robust DOM capture
-        const canvas = await html2canvas(page, { scale: 2, useCORS: true, allowTaint: true });
+        // Use html2canvas for robust DOM capture with high scale for sharp edges
+        const canvas = await html2canvas(page, { scale: 4, useCORS: true, allowTaint: true, backgroundColor: '#ffffff' });
+        
+        // Force 1-bit thresholding to fix blurred text and black logos on thermal printers
+        this.processCanvasTo1Bit(canvas);
+
         const imgData = canvas.toDataURL('image/png');
         
         pdf.addImage(imgData, 'PNG', 0, 0, 58, heightInMm);
@@ -550,7 +583,8 @@ export default class FuelBill extends Component {
           pdf.addPage([58, heightInMm], 'portrait');
         }
 
-        const canvas = await html2canvas(page, { scale: 2, useCORS: true, allowTaint: true });
+        const canvas = await html2canvas(page, { scale: 4, useCORS: true, allowTaint: true, backgroundColor: '#ffffff' });
+        this.processCanvasTo1Bit(canvas);
         const imgData = canvas.toDataURL('image/png');
         pdf.addImage(imgData, 'PNG', 0, 0, 58, heightInMm);
       } catch (err) {

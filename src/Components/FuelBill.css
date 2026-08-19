@@ -36923,7 +36923,7 @@ input[type="color"].form-control:disabled {
   padding: 5mm;
   box-sizing: border-box;
   text-align: left;
-  border: 1px solid #ddd;
+  border: none;
 }
 @media print {
   .thermal-58mm {
