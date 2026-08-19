@@ -495,30 +495,65 @@ export default class FuelBill extends Component {
     }
   };
 
-  handleDownloadPDF = async () => {
+  handleDownloadMultiplePDFs = async () => {
     const pages = document.querySelectorAll('.thermal-58mm');
     if (pages.length === 0) return;
 
     for (let i = 0; i < pages.length; i++) {
       try {
         const page = pages[i];
-        // Calculate dimensions
         const height = page.offsetHeight;
         const width = page.offsetWidth;
         
-        // 58mm thermal receipt has variable height, so we define format dynamically
         const pdf = new jsPDF({
           orientation: 'portrait',
           unit: 'px',
           format: [width, height]
         });
 
-        const imgData = await htmlToImage.toPng(page, { pixelRatio: 3 }); // High res
+        // Add a slight delay to ensure fonts/images are ready
+        await new Promise(resolve => setTimeout(resolve, 100));
+        const imgData = await htmlToImage.toPng(page, { pixelRatio: 2 });
         pdf.addImage(imgData, 'PNG', 0, 0, width, height);
         pdf.save(`thermal_receipt_${i + 1}.pdf`);
       } catch (err) {
         console.error("Error generating PDF:", err);
       }
+    }
+  };
+
+  handleDownloadSinglePDF = async () => {
+    const pages = document.querySelectorAll('.thermal-58mm');
+    if (pages.length === 0) return;
+
+    let pdf = null;
+
+    for (let i = 0; i < pages.length; i++) {
+      try {
+        const page = pages[i];
+        const height = page.offsetHeight;
+        const width = page.offsetWidth;
+        
+        if (!pdf) {
+          pdf = new jsPDF({
+            orientation: 'portrait',
+            unit: 'px',
+            format: [width, height]
+          });
+        } else {
+          pdf.addPage([width, height], 'portrait');
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 100));
+        const imgData = await htmlToImage.toPng(page, { pixelRatio: 2 });
+        pdf.addImage(imgData, 'PNG', 0, 0, width, height);
+      } catch (err) {
+        console.error("Error generating PDF page:", err);
+      }
+    }
+
+    if (pdf) {
+      pdf.save(`thermal_receipts_all.pdf`);
     }
   };
 
@@ -672,9 +707,14 @@ export default class FuelBill extends Component {
                   Download as Image(s)
                 </button>
               ) : (
-                <button onClick={this.handleDownloadPDF} type="button" className="bg-btn" style={{ marginLeft: '10px', backgroundColor: '#dc3545', color: '#fff' }}>
-                  Download 58mm PDF
-                </button>
+                <>
+                  <button onClick={this.handleDownloadSinglePDF} type="button" className="bg-btn" style={{ marginLeft: '10px', backgroundColor: '#dc3545', color: '#fff' }}>
+                    Download Single PDF
+                  </button>
+                  <button onClick={this.handleDownloadMultiplePDFs} type="button" className="bg-btn" style={{ marginLeft: '10px', backgroundColor: '#dc3545', color: '#fff' }}>
+                    Download Multiple PDFs
+                  </button>
+                </>
               )}
             </div>
 
@@ -727,7 +767,7 @@ export default class FuelBill extends Component {
                     <div key={idx} className="thermal-58mm">
                       <div className="thermal-receipt-body">
                         <div className="thermal-logo-container">
-                          <img src={bill.fuel_station_logo} alt="Logo" className="thermal-logo" />
+                          <img crossOrigin="anonymous" src={bill.fuel_station_logo} alt="Logo" className="thermal-logo" />
                           <div className="thermal-brand-name">{bill.fuel_station_name}</div>
                         </div>
                         <div className="thermal-header">
