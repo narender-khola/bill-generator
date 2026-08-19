@@ -383,35 +383,28 @@ export default class FuelBill extends Component {
     let amount_arr = this._generateAmountArray(total_number_of_bills);
     let receipt_no = 2102709341 + this._generateRandomNumber(1000, 2102709341); // starting txn number
     
-    // Get rates for the selected month from fuel_data
-    let month_rates = [];
-    if (month && month.includes("-")) {
-      let month_year = month; // format: YYYY-MM
-      month_rates = fuel_data.filter((item) => item.date.startsWith(month_year));
-    }
-    
+    const getClosestStoredRate = (targetDateStr) => {
+      let targetTime = new Date(targetDateStr).getTime();
+      let closestRate = fuel_data[fuel_data.length - 1].rate;
+      let minDiff = Infinity;
+      for (let item of fuel_data) {
+         let diff = Math.abs(new Date(item.date).getTime() - targetTime);
+         if (diff < minDiff) {
+            minDiff = diff;
+            closestRate = item.rate;
+         }
+      }
+      return parseFloat(closestRate).toFixed(2);
+    };
+
     for (let i = 0; i < total_number_of_bills; i++) {
       let dateStr = new Date(new Date(month).getTime() + day_offsets[i] * 60 * 60 * 24 * 1000).toISOString().split("T")[0];
       
-      // Determine rate: fetch from fuel_data or use petrol_rate with deviation
-      let rate = petrol_rate;
-      if (month_rates.length > 0) {
-        // Find rate for this specific date in fuel_data
-        let rate_entry = month_rates.find((item) => item.date === dateStr);
-        if (rate_entry) {
-          rate = rate_entry.rate;
-        } else if (month_rates.length > 0) {
-          // Use a random rate from the month's available rates
-          rate = month_rates[Math.floor(Math.random() * month_rates.length)].rate;
-        } else {
-          // Fallback: use petrol_rate with ±0.20 deviation
-          let deviation = this._generateRandomNumber(-20, 20) / 100;
-          rate = (petrol_rate + deviation).toFixed(2);
-        }
+      let rate;
+      if (this.state.petrol_rate_auto === false && this.state.petrol_rate) {
+        rate = parseFloat(this.state.petrol_rate).toFixed(2);
       } else {
-        // No data for this month, use petrol_rate with ±0.20 deviation
-        let deviation = this._generateRandomNumber(-20, 20) / 100;
-        rate = (petrol_rate + deviation).toFixed(2);
+        rate = getClosestStoredRate(dateStr);
       }
       
       let fuel_value = { date: dateStr, rate: rate };
