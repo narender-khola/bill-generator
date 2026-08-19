@@ -4,6 +4,7 @@ import { fuel_data } from "./Fueldata";
 import ReactGA from 'react-ga4';
 import { getHistory, addToHistory } from "../utils/inputHistory";
 import * as htmlToImage from "html-to-image";
+import { jsPDF } from "jspdf";
 
 const HISTORY_KEYS = {
   number_of_bills: "fuel_number_of_bills",
@@ -494,6 +495,33 @@ export default class FuelBill extends Component {
     }
   };
 
+  handleDownloadPDF = async () => {
+    const pages = document.querySelectorAll('.thermal-58mm');
+    if (pages.length === 0) return;
+
+    for (let i = 0; i < pages.length; i++) {
+      try {
+        const page = pages[i];
+        // Calculate dimensions
+        const height = page.offsetHeight;
+        const width = page.offsetWidth;
+        
+        // 58mm thermal receipt has variable height, so we define format dynamically
+        const pdf = new jsPDF({
+          orientation: 'portrait',
+          unit: 'px',
+          format: [width, height]
+        });
+
+        const imgData = await htmlToImage.toPng(page, { pixelRatio: 3 }); // High res
+        pdf.addImage(imgData, 'PNG', 0, 0, width, height);
+        pdf.save(`thermal_receipt_${i + 1}.pdf`);
+      } catch (err) {
+        console.error("Error generating PDF:", err);
+      }
+    }
+  };
+
   render() {
     const { amount, mean, bills, pdf_view, total_number_of_bills, sum_amount, sum_ltrs, month_mode, number_of_bills, petrol_rate, petrol_rate_auto, month, crumpled, month_end_date } = this.state;
     return (
@@ -639,9 +667,13 @@ export default class FuelBill extends Component {
               <button onClick={() => window.location.reload()} type="button" className="bg-btn bg-btn-primary">
                 Generate More
               </button>
-              {crumpled && (
+              {crumpled ? (
                 <button onClick={this.handleDownloadImages} type="button" className="bg-btn" style={{ marginLeft: '10px', backgroundColor: '#28a745', color: '#fff' }}>
                   Download as Image(s)
+                </button>
+              ) : (
+                <button onClick={this.handleDownloadPDF} type="button" className="bg-btn" style={{ marginLeft: '10px', backgroundColor: '#dc3545', color: '#fff' }}>
+                  Download 58mm PDF
                 </button>
               )}
             </div>
@@ -739,7 +771,7 @@ export default class FuelBill extends Component {
                           </div>
                           <div className="thermal-row">
                             <span className="thermal-label">Fuel</span>
-                            <span className="thermal-val">:</span>
+                            <span className="thermal-val">:{bill.product || 'Petrol'}</span>
                           </div>
                           <div className="thermal-row">
                             <span className="thermal-label">Density</span>

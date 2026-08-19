@@ -11,6 +11,7 @@
     "html-to-image": "^1.11.13",
     "jimp": "^1.6.1",
     "jsbarcode": "^3.12.3",
+    "jspdf": "^4.2.1",
     "qrcode.react": "^4.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -20,8 +21,9 @@
   },
   "scripts": {
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
+    "deploy": "gh-pages -d build -r $(git remote get-url personal)",
     "start": "react-scripts start",
+    "fetch:petrol": "node scripts/fetch-petrol.js",
     "build": "REACT_APP_GIT_SHA=$(git rev-parse --short HEAD 2>/dev/null || echo dev) REACT_APP_BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
