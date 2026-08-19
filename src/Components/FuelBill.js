@@ -383,6 +383,12 @@ export default class FuelBill extends Component {
     let amount_arr = this._generateAmountArray(total_number_of_bills);
     let receipt_no = 2102709341 + this._generateRandomNumber(1000, 2102709341); // starting txn number
     
+    // Check if we have real historical data for this month
+    let month_rates = [];
+    if (month && month.includes("-")) {
+      month_rates = fuel_data.filter((item) => item.date.startsWith(month));
+    }
+    
     const getClosestStoredRate = (targetDateStr) => {
       let targetTime = new Date(targetDateStr).getTime();
       let closestRate = fuel_data[fuel_data.length - 1].rate;
@@ -405,6 +411,12 @@ export default class FuelBill extends Component {
         rate = parseFloat(this.state.petrol_rate).toFixed(2);
       } else {
         rate = getClosestStoredRate(dateStr);
+        // If there's no historical data for this month (e.g. future date), 
+        // add a tiny bit of random variance so the bills don't look identical.
+        if (month_rates.length === 0) {
+           let deviation = this._generateRandomNumber(-20, 20) / 100;
+           rate = (parseFloat(rate) + deviation).toFixed(2);
+        }
       }
       
       let fuel_value = { date: dateStr, rate: rate };
