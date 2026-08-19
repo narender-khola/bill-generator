@@ -4,6 +4,7 @@ import { fuel_data } from "./Fueldata";
 import ReactGA from 'react-ga4';
 import { getHistory, addToHistory } from "../utils/inputHistory";
 import * as htmlToImage from "html-to-image";
+import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 
 const HISTORY_KEYS = {
@@ -511,9 +512,10 @@ export default class FuelBill extends Component {
           format: [width, height]
         });
 
-        // Add a slight delay to ensure fonts/images are ready
-        await new Promise(resolve => setTimeout(resolve, 100));
-        const imgData = await htmlToImage.toPng(page, { pixelRatio: 2 });
+        // Use html2canvas for robust DOM capture
+        const canvas = await html2canvas(page, { scale: 2, useCORS: true, allowTaint: true });
+        const imgData = canvas.toDataURL('image/png');
+        
         pdf.addImage(imgData, 'PNG', 0, 0, width, height);
         pdf.save(`thermal_receipt_${i + 1}.pdf`);
       } catch (err) {
@@ -544,8 +546,8 @@ export default class FuelBill extends Component {
           pdf.addPage([width, height], 'portrait');
         }
 
-        await new Promise(resolve => setTimeout(resolve, 100));
-        const imgData = await htmlToImage.toPng(page, { pixelRatio: 2 });
+        const canvas = await html2canvas(page, { scale: 2, useCORS: true, allowTaint: true });
+        const imgData = canvas.toDataURL('image/png');
         pdf.addImage(imgData, 'PNG', 0, 0, width, height);
       } catch (err) {
         console.error("Error generating PDF page:", err);
@@ -767,7 +769,7 @@ export default class FuelBill extends Component {
                     <div key={idx} className="thermal-58mm">
                       <div className="thermal-receipt-body">
                         <div className="thermal-logo-container">
-                          <img crossOrigin="anonymous" src={bill.fuel_station_logo} alt="Logo" className="thermal-logo" />
+                          <img src={bill.fuel_station_logo} alt="Logo" className="thermal-logo" />
                           <div className="thermal-brand-name">{bill.fuel_station_name}</div>
                         </div>
                         <div className="thermal-header">
