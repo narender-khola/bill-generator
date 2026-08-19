@@ -506,17 +506,19 @@ export default class FuelBill extends Component {
         const height = page.offsetHeight;
         const width = page.offsetWidth;
         
+        const heightInMm = (height * 58) / width;
+        
         const pdf = new jsPDF({
           orientation: 'portrait',
-          unit: 'px',
-          format: [width, height]
+          unit: 'mm',
+          format: [58, heightInMm]
         });
 
         // Use html2canvas for robust DOM capture
         const canvas = await html2canvas(page, { scale: 2, useCORS: true, allowTaint: true });
         const imgData = canvas.toDataURL('image/png');
         
-        pdf.addImage(imgData, 'PNG', 0, 0, width, height);
+        pdf.addImage(imgData, 'PNG', 0, 0, 58, heightInMm);
         pdf.save(`thermal_receipt_${i + 1}.pdf`);
       } catch (err) {
         console.error("Error generating PDF:", err);
@@ -536,19 +538,21 @@ export default class FuelBill extends Component {
         const height = page.offsetHeight;
         const width = page.offsetWidth;
         
+        const heightInMm = (height * 58) / width;
+        
         if (!pdf) {
           pdf = new jsPDF({
             orientation: 'portrait',
-            unit: 'px',
-            format: [width, height]
+            unit: 'mm',
+            format: [58, heightInMm]
           });
         } else {
-          pdf.addPage([width, height], 'portrait');
+          pdf.addPage([58, heightInMm], 'portrait');
         }
 
         const canvas = await html2canvas(page, { scale: 2, useCORS: true, allowTaint: true });
         const imgData = canvas.toDataURL('image/png');
-        pdf.addImage(imgData, 'PNG', 0, 0, width, height);
+        pdf.addImage(imgData, 'PNG', 0, 0, 58, heightInMm);
       } catch (err) {
         console.error("Error generating PDF page:", err);
       }
