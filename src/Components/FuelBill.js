@@ -486,8 +486,8 @@ export default class FuelBill extends Component {
     const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imgData.data;
     
-    // Threshold value (0-255). 200 retains thick sharp text while removing light gray noise.
-    const threshold = 200; 
+    // Threshold value (0-255). 128 is the exact midpoint, preventing light colors from turning solid black.
+    const threshold = 128; 
     
     for (let i = 0; i < data.length; i += 4) {
       // If pixel is transparent, force it to white to avoid black background boxes on logos
