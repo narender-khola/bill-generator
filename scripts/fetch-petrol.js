@@ -4,7 +4,8 @@
 //
 // Usage: node scripts/fetch-petrol.js [city] [--fuel petrol|diesel] [--from YYYY-MM-DD] [--to YYYY-MM-DD]
 //
-// --fuel diesel writes src/Components/diesel-latest.json instead.
+// --fuel diesel writes src/Components/diesel-latest.json instead.  New days are
+// merged into the existing file (its rows win); --replace overwrites it.
 //
 // Default city = delhi. Supported cities follow bankbazaar URL slugs
 // (delhi, mumbai, bangalore, chennai, kolkata, hyderabad, ...).
@@ -104,6 +105,18 @@ function parseHistory(html) {
     .sort((a, b) => a.date.localeCompare(b.date));
 }
 
+// The history blob sometimes carries another product's price on a single day
+// (diesel 95.20 inside petrol 102.12, and the reverse).  Drop any day more
+// than 3% off the median of the week around it: a lone spike goes, a genuine
+// price step survives because the days after it agree with it.
+function dropSpikes(rows) {
+  return rows.filter((r, i) => {
+    const win = rows.slice(Math.max(0, i - 3), i + 4).map((x) => x.rate).sort((a, b) => a - b);
+    const med = win[Math.floor(win.length / 2)];
+    return Math.abs(r.rate - med) / med <= 0.03;
+  });
+}
+
 function parseRows(html) {
   const re = /(\d{1,2}) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (20\d{2})<\/td>[^₹]{0,500}?₹\s*([\d.]+)/g;
   const out = [];
@@ -119,11 +132,12 @@ function parseRows(html) {
 }
 
 function parseArgs(argv) {
-  const opts = { city: "delhi", fuel: "petrol", from: null, to: null };
+  const opts = { city: "delhi", fuel: "petrol", from: null, to: null, replace: false };
   const rest = [];
   for (let i = 0; i < argv.length; i += 1) {
     if (argv[i] === "--from") opts.from = argv[++i];
     else if (argv[i] === "--to") opts.to = argv[++i];
+    else if (argv[i] === "--replace") opts.replace = true;
     else if (argv[i] === "--fuel") opts.fuel = String(argv[++i] || "").toLowerCase();
     else rest.push(argv[i]);
   }
@@ -140,7 +154,7 @@ function parseArgs(argv) {
 }
 
 async function main() {
-  const { city, fuel, from, to } = parseArgs(process.argv.slice(2));
+  const { city, fuel, from, to, replace } = parseArgs(process.argv.slice(2));
   const url = `https://www.bankbazaar.com/fuel/${fuel}-price-${city}.html`;
   console.log(`Fetching ${url}`);
   const html = await fetchHtml(url);
@@ -153,6 +167,9 @@ async function main() {
   }
   if (!rows.length) throw new Error("No rows parsed — page format may have changed.");
   console.log(`Parsed ${rows.length} rows via ${via}`);
+  const parsed = rows.length;
+  rows = dropSpikes(rows);
+  if (rows.length < parsed) console.log(`Dropped ${parsed - rows.length} stray-price day(s)`);
 
   const available = rows.length ? `${rows[0].date} → ${rows[rows.length - 1].date}` : "none";
   if (from) rows = rows.filter((r) => r.date >= from);
@@ -162,6 +179,21 @@ async function main() {
   }
 
   const outPath = path.join(__dirname, "..", "src", "Components", `${fuel}-latest.json`);
+  // Add new days to what is already there instead of replacing it: the file
+  // may hold a hand-supplied series that the source disagrees with, and that
+  // series wins wherever both have a day.  --replace starts over.
+  if (!replace && fs.existsSync(outPath)) {
+    try {
+      const prev = JSON.parse(fs.readFileSync(outPath, "utf8"));
+      const byDate = new Map(rows.map((r) => [r.date, r]));
+      for (const r of prev.rows || []) byDate.set(r.date, r);
+      const added = byDate.size - (prev.rows || []).length;
+      rows = [...byDate.values()].sort((a, b) => a.date.localeCompare(b.date));
+      console.log(`Merged into existing file: ${added} new day(s)`);
+    } catch (e) {
+      console.log(`Existing ${outPath} unreadable, replacing it`);
+    }
+  }
   const payload = {
     source: url,
     city,

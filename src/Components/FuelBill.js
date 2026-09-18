@@ -597,6 +597,8 @@ export default class FuelBill extends Component {
     // Check if we have real historical data for this range
     let month_rates = fuel_data.filter((item) => item.date >= range_start && item.date <= range_end);
     
+    // The bill's own day's price; a day missing from the history takes the
+    // nearest stored day's.
     const getClosestStoredRate = (targetDateStr) => {
       let targetTime = new Date(targetDateStr).getTime();
       let closestRate = fuel_data[fuel_data.length - 1].rate;
@@ -931,7 +933,7 @@ export default class FuelBill extends Component {
                     onChange={(e) => this.onChange(e, "petrol_rate")}
                   />
                   {petrol_rate_auto ? (
-                    <span className="bg-hint bg-hint-success">Auto-filled: average rate for {range_start} to {range_end} from historical data</span>
+                    <span className="bg-hint bg-hint-success">Average for {range_start} to {range_end}. Each bill uses the rate on its own date; type a rate to use one fixed rate on every bill.</span>
                   ) : null}
                 </div>
               </div>

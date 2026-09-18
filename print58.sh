@@ -34,6 +34,10 @@
 #                         makes) and fits the head is printed dot for dot:
 #                         rescaling it 362->383 dots re-thresholds every stroke
 #                         and bloats bold text into blobs.
+#     -P, --pause         (default) stop after each receipt so it can be torn
+#                         off; Enter prints the next, q stops.  Distance fed
+#                         past the tear bar: PRINT58_TEAR_DOTS (default 120, 8/mm)
+#         --no-pause      print the whole run back to back as one job
 #         --cups          old path: one CUPS job per page through rastertozj
 #                         (default sends the whole run as ONE raw ESC/POS job;
 #                         blank gap between receipts: PRINT58_GAP_DOTS, 8/mm)
@@ -61,7 +65,7 @@
 set -euo pipefail
 
 DRY=0 OUT="" PRINTER="${PRINT58_PRINTER:-SRS583}" THRESH=160 DITHER=0
-GAMMA=1.0 SHARPEN=0.8 MARGIN=0 COPIES=1 CROP=1 CUT=0 VERBOSE=0 EXACT=0 RESET=0 CLEAR=0 RESYNC=1 VIA_CUPS=0 FIT=0
+GAMMA=1.0 SHARPEN=0.8 MARGIN=0 COPIES=1 CROP=1 CUT=0 VERBOSE=0 EXACT=0 RESET=0 CLEAR=0 RESYNC=1 VIA_CUPS=0 FIT=0 PAUSE=1
 FILES=()
 
 die() { echo "print58: $*" >&2; exit 1; }
@@ -85,6 +89,8 @@ while [ $# -gt 0 ]; do
     --no-resync)    RESYNC=0 ;;
     --cups)         VIA_CUPS=1 ;;
     --fit)          FIT=1 ;;
+    -P|--pause)     PAUSE=1 ;;
+    --no-pause)     PAUSE=0 ;;
     -v|--verbose)   VERBOSE=1 ;;
     -h|--help)      awk 'NR > 1 && !/^#/ { exit } NR > 1 { sub(/^# ?/, ""); print }' "$0"; exit 0 ;;
     -*)             die "unknown option $1 (try --help)" ;;
@@ -120,7 +126,7 @@ T=$(mktemp -d); trap 'rm -rf "$T"' EXIT
 
 for SRC in "${FILES[@]}"; do
   [ -f "$SRC" ] || die "no such file: $SRC"
-  rm -f "$T"/p-*.png "$T"/out-*.pdf "$T"/combined.pdf "$T"/heights.txt
+  rm -f "$T"/p-*.png "$T"/rcpt-*.prn "$T"/out-*.pdf "$T"/combined.pdf "$T"/heights.txt
 
   # Rasterise at exactly 3x the dot pitch; Pillow does the final resample,
   # which keeps thin strokes intact far better than letting the PDF be scaled
@@ -355,12 +361,15 @@ def feed(dots):
     while dots > 0:
         n = min(255, dots); out += b"\x1bJ" + bytes([n]); dots -= n
     return bytes(out)
-job = bytearray(b"\x00" * int(env.get("PRINT58_RESYNC_BYTES", "65536")) if env.get("PRINT58_RESYNC", "1") == "1" else b"")
-job += b"\x1b@"
+head = bytearray(b"\x00" * int(env.get("PRINT58_RESYNC_BYTES", "65536")) if env.get("PRINT58_RESYNC", "1") == "1" else b"")
+head += b"\x1b@"
 if env.get("PRINT58_RESET", "0") == "1":
-    job += feed(16)
+    head += feed(16)
+tear = int(env.get("PRINT58_TEAR_DOTS", "120"))   # receipt end -> past the tear bar
 wb = HEAD_DOTS // 8
-for bw in rendered:
+job = bytearray(head)
+for n, bw in enumerate(rendered):
+    start = len(job)
     canvas = Image.new("1", (HEAD_DOTS, bw.height), 1)
     canvas.paste(bw.crop((0, 0, min(bw.width, HEAD_DOTS), bw.height)), (0, 0))
     # PIL "1": bit set = white; ESC/POS: bit set = burn.  Invert the bytes.
@@ -372,9 +381,15 @@ for bw in rendered:
             job += feed(h)                  # blank rows: just advance paper
             continue
         job += b"\x1dv0\x00" + bytes([wb & 255, wb >> 8, h & 255, h >> 8]) + chunk
+    body = bytes(job[start:])
     job += feed(gap)
     if cut:
         job += b"\x1dV\x01"
+    # The same receipt as a job of its own, for --pause: fed clear of the tear
+    # bar so it can be torn off before the next one is sent.  Each carries the
+    # resync preamble, since nothing is left mid-chunk between them anyway.
+    with open(os.path.join(D, "rcpt-%04d.prn" % n), "wb") as f:
+        f.write(bytes(head) + body + feed(tear) + (b"\x1dV\x01" if cut else b""))
 job += feed(80)                             # clear the tear bar
 with open(os.path.join(D, "job.prn"), "wb") as f:
     f.write(job)
@@ -424,6 +439,23 @@ PY
   if [ "$VIA_CUPS" = "0" ]; then
     # Default: every page, the resync preamble and all feeds in a single raw
     # job -- no job boundary for the head to lose bytes at (see job.prn above).
+    NPAGES=$(grep -c . "$T/heights.txt")
+    if [ "$PAUSE" = "1" ] && [ "$NPAGES" -gt 1 ]; then
+      # One receipt per job, the next sent only once the operator has torn
+      # off the last.  The printer is idle by then, so the job boundary that
+      # garbles back-to-back jobs cannot bite.
+      [ -t 0 ] || [ -r /dev/tty ] || die "--pause needs a terminal to wait on"
+      for ((k = 0; k < NPAGES; k++)); do
+        lp -d "$PRINTER" -n "$COPIES" -o raw "$T/rcpt-$(printf '%04d' "$k").prn" >/dev/null
+        drain || die "receipt $((k + 1)) did not finish printing on $PRINTER (queue stuck; is it connected and online?)"
+        [ $((k + 1)) -lt "$NPAGES" ] || break
+        printf 'print58: receipt %d/%d printed -- tear it off, then Enter for the next (q to stop) ' $((k + 1)) "$NPAGES" >&2
+        read -r reply < /dev/tty || reply=q
+        case "$reply" in q|Q) echo "$SRC: stopped after $((k + 1)) of $NPAGES receipt(s)"; continue 2 ;; esac
+      done
+      echo "$SRC: printed $NPAGES receipt(s) on $PRINTER, pausing between each"
+      continue
+    fi
     lp -d "$PRINTER" -n "$COPIES" -o raw "$T/job.prn" >/dev/null
     drain || die "$SRC did not finish printing on $PRINTER (queue stuck; is it connected and online?)"
     echo "$SRC: printed $(grep -c . "$T/heights.txt") page(s) on $PRINTER as one job"
