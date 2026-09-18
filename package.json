@@ -8,7 +8,6 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-    "html-to-image": "^1.11.13",
     "jimp": "^1.6.1",
     "jsbarcode": "^3.12.3",
     "jspdf": "^4.2.1",
@@ -20,7 +19,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "predeploy": "npm run build",
+    "predeploy": "npm run bundle:mac && npm run build",
+    "bundle:mac": "bash mac/build-app.sh",
     "deploy": "gh-pages -d build -r $(git remote get-url personal)",
     "start": "react-scripts start",
     "fetch:petrol": "node scripts/fetch-petrol.js",

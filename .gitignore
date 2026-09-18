@@ -30,3 +30,6 @@ yarn-error.log*
 public/images/*.HEIC
 public/images/IMG_*.jpg
 public/images/IMG_*.jpeg
+
+# Built by `npm run bundle:mac` (runs on predeploy) from print58.sh + mac/.
+public/downloads/

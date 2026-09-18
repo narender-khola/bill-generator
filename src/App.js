@@ -20,24 +20,45 @@ if (TRACKING_ID) {
   ReactGA.initialize(TRACKING_ID);
 }
 
+// Top-level tabs.  A tab with `options` groups several generators and shows
+// a switcher above the form to pick between them.
 const GENERATORS = [
   { id: "fuel", label: "Fuel Bill", component: FuelBill, available: true },
   { id: "fiber", label: "Fiber Bill", component: FiberBill, available: true },
   { id: "driver", label: "Driver Salary", component: DriverSalary, available: true },
   { id: "rent", label: "Rent Receipt", component: RentReceipt, available: true },
-  { id: "medical-hdfc", label: "Medical (HDFC)", component: MedicalInsurance, available: true },
-  { id: "medical-niva", label: "Medical (Niva Bupa)", component: NivaBupa, available: true },
+  {
+    id: "medical",
+    label: "Medical",
+    available: true,
+    options: [
+      { id: "medical-hdfc", label: "HDFC Ergo", component: MedicalInsurance },
+      { id: "medical-niva", label: "Niva Bupa", component: NivaBupa },
+    ],
+  },
   { id: "lta", label: "LTA", component: LTA, available: true },
-  { id: "car-insurance", label: "Car Insurance (Zurich Kotak)", component: CarInsurance, available: true },
-  { id: "car-insurance-iffco", label: "Car Insurance (IFFCO Tokio)", component: IffcoTokio, available: true },
-  { id: "car-rc", label: "Car RC (Delhi)", component: CarRC, available: true },
+  {
+    id: "car",
+    label: "Car",
+    available: true,
+    options: [
+      { id: "car-insurance", label: "Insurance · Zurich Kotak", component: CarInsurance },
+      { id: "car-insurance-iffco", label: "Insurance · IFFCO Tokio", component: IffcoTokio },
+      { id: "car-rc", label: "RC (Delhi)", component: CarRC },
+    ],
+  },
 ];
 
 function App() {
   const [active, setActive] = useState("fuel");
+  // The option last picked in each grouped tab, so switching tabs and coming
+  // back lands on the same one.
+  const [picked, setPicked] = useState({});
   const [authed, setAuthed] = useState(() => isAuthed());
   if (!authed) return <Login onAuth={() => setAuthed(true)} />;
-  const Active = GENERATORS.find((g) => g.id === active).component;
+  const tab = GENERATORS.find((g) => g.id === active);
+  const option = tab.options ? tab.options.find((o) => o.id === picked[tab.id]) || tab.options[0] : null;
+  const Active = option ? option.component : tab.component;
   const onLogout = () => { logout(); setAuthed(false); };
   return (
     <div className="app-shell">
@@ -48,6 +69,14 @@ function App() {
             <h1 className="app-title">Bill Generator</h1>
             <p className="app-subtitle">Fuel, fiber, and more — pick a generator below.</p>
           </div>
+          <a
+            href={process.env.PUBLIC_URL + "/downloads/Print58.dmg"}
+            download
+            className="app-download-link"
+            title="Print58 for Mac: drop receipt PDFs on it to print on a 58mm thermal printer, pausing after each receipt. Not notarized by Apple, so on first launch click Done, then System Settings → Privacy & Security → Open Anyway."
+          >
+            <span aria-hidden="true">↓</span> Mac print app
+          </a>
           <a
             href="https://buymeacoffee.com/narender"
             target="_blank"
@@ -75,7 +104,23 @@ function App() {
         ))}
       </nav>
       <main className="app-content">
-        <Active />
+        {tab.options ? (
+          <div className="app-subnav noprint" role="tablist" aria-label={`${tab.label} generators`}>
+            {tab.options.map((o) => (
+              <button
+                key={o.id}
+                type="button"
+                role="tab"
+                aria-selected={o.id === option.id}
+                className={`app-subnav-btn ${o.id === option.id ? "active" : ""}`}
+                onClick={() => setPicked((p) => ({ ...p, [tab.id]: o.id }))}
+              >
+                {o.label}
+              </button>
+            ))}
+          </div>
+        ) : null}
+        <Active key={option ? option.id : tab.id} />
       </main>
       <BuildInfo />
     </div>

@@ -444,13 +444,18 @@ PY
       # One receipt per job, the next sent only once the operator has torn
       # off the last.  The printer is idle by then, so the job boundary that
       # garbles back-to-back jobs cannot bite.
-      [ -t 0 ] || [ -r /dev/tty ] || die "--pause needs a terminal to wait on"
+      # PRINT58_GUI=1 (set by the Print58 app) asks with a dialog instead.
+      [ "${PRINT58_GUI:-0}" = "1" ] || [ -t 0 ] || [ -r /dev/tty ] || die "--pause needs a terminal to wait on"
       for ((k = 0; k < NPAGES; k++)); do
         lp -d "$PRINTER" -n "$COPIES" -o raw "$T/rcpt-$(printf '%04d' "$k").prn" >/dev/null
         drain || die "receipt $((k + 1)) did not finish printing on $PRINTER (queue stuck; is it connected and online?)"
         [ $((k + 1)) -lt "$NPAGES" ] || break
-        printf 'print58: receipt %d/%d printed -- tear it off, then Enter for the next (q to stop) ' $((k + 1)) "$NPAGES" >&2
-        read -r reply < /dev/tty || reply=q
+        if [ "${PRINT58_GUI:-0}" = "1" ]; then
+          reply=$(osascript -e "button returned of (display dialog \"Receipt $((k + 1)) of $NPAGES printed.\" & return & \"Tear it off, then print the next one.\" with title \"Print58\" buttons {\"Stop\", \"Print Next\"} default button \"Print Next\" cancel button \"Stop\")" 2>/dev/null) || reply=q
+        else
+          printf 'print58: receipt %d/%d printed -- tear it off, then Enter for the next (q to stop) ' $((k + 1)) "$NPAGES" >&2
+          read -r reply < /dev/tty || reply=q
+        fi
         case "$reply" in q|Q) echo "$SRC: stopped after $((k + 1)) of $NPAGES receipt(s)"; continue 2 ;; esac
       done
       echo "$SRC: printed $NPAGES receipt(s) on $PRINTER, pausing between each"

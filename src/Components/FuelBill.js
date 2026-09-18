@@ -3,7 +3,6 @@ import "./FuelBill.css";
 import { fuel_data, diesel_data } from "./Fueldata";
 import ReactGA from 'react-ga4';
 import { getHistory, addToHistory } from "../utils/inputHistory";
-import * as htmlToImage from "html-to-image";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 
@@ -24,60 +23,6 @@ const HISTORY_KEYS = {
   mean: "fuel_mean",
   amount: "fuel_amount",
 };
-
-const formatPaytmDate = (dateObj, timeStr) => {
-  if (!dateObj) return "20 Jul 2026, 04:05:44 PM";
-  const d = new Date(dateObj);
-  if (isNaN(d.getTime())) return "20 Jul 2026, 04:05:44 PM";
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  const day = String(d.getDate()).padStart(2, "0");
-  const month = months[d.getMonth()];
-  const year = d.getFullYear();
-  let timeFormatted = timeStr || "04:05:44 PM";
-  if (timeFormatted && !timeFormatted.toUpperCase().includes("AM") && !timeFormatted.toUpperCase().includes("PM")) {
-    let parts = timeFormatted.split(":");
-    let h = parseInt(parts[0], 10);
-    let m = parseInt(parts[1], 10);
-    let s = parseInt(parts[2] || 0, 10);
-    if (!isNaN(h)) {
-      const ampm = h >= 12 ? "PM" : "AM";
-      h = h % 12 || 12;
-      timeFormatted = `${String(h).padStart(2, "0")}:${String(m || 0).padStart(2, "0")}:${String(s || 0).padStart(2, "0")} ${ampm}`;
-    }
-  }
-  return `${day} ${month} ${year}, ${timeFormatted}`;
-};
-
-const PaytmReceiptOverlay = ({ bill, position }) => {
-  if (!bill) return null;
-  const formattedDateStr = formatPaytmDate(bill.date, bill.time);
-  const authCode = bill.auth_code || "014969";
-  const rrn = bill.rrn || "620116865286";
-  const txnId1 = bill.paytm_txn1 || "20260720011090002859951";
-  const txnId2 = bill.paytm_txn2 || "74141286892";
-  const orderId1 = bill.paytm_order1 || "20260720160520002965";
-  const orderId2 = bill.paytm_order2 || "27204486";
-
-  return (
-    <div className={`paytm-overlay paytm-overlay-${position}`}>
-      <div className="paytm-patch paytm-patch-amount">₹{bill.amount}</div>
-      {/* First Auth Block (Under Payment Successful) is not present on this receipt format */}
-      
-      {/* Second Auth Block (Under HDFC Bank) */}
-      <div className="paytm-patch paytm-patch-auth2">Auth-Code : {authCode}</div>
-      <div className="paytm-patch paytm-patch-date2">{formattedDateStr}</div>
-      <div className="paytm-patch paytm-patch-rrn2">RRN - {rrn}</div>
-
-      <div className="paytm-patch paytm-patch-txn">
-        {txnId1}<br />{txnId2}
-      </div>
-      <div className="paytm-patch paytm-patch-order">
-        {orderId1}<br />{orderId2}
-      </div>
-    </div>
-  );
-};
-
 
 const _currentMonth = () => {
   const d = new Date();
@@ -136,7 +81,6 @@ const FUEL_STATIONS = [
     organisation: "Bharat Petroleum BPCL",
     addresses: [
       "BP-BADSHAHPUR, VIL..NORPUR, GURUGRAM. HARYANA",
-      "BP BADSHAPUR, VILL NOORPUR, GURUGRAM HR",
       "DLF Phase 5, Sector 43, Gurugram",
       "Opp Gold Sukh Mall, Sector 44, Gurugram",
       "Netaji Subhash Marg, Sector 47, Gurugram",
@@ -207,6 +151,57 @@ const _dispenserReading = (dispenser, t, rate) => {
   return { local_id: base.local_id + perMs.local_id * dt, atot: base.atot + dv * rate, vtot: base.vtot + dv };
 };
 
+// Every other pump (and Badshahpur's diesel nozzles, which the real readings
+// don't cover) gets an invented but stable series: two dispensers per pump and
+// fuel, with starting counters and daily throughput drawn from a generator
+// seeded by the pump's address.  The same pump therefore always prints the same
+// FIP/nozzle pairs and counters that climb steadily with the bill's date, across
+// runs.  Ranges follow the real Badshahpur nozzles: ~1,700 L and ~350 sales a
+// day, ~4.9 L a sale.
+const _SERIES_REF = new Date(2026, 7, 1).getTime();
+const _seeded = (str) => {
+  let h = 2166136261;
+  for (let i = 0; i < str.length; i++) h = Math.imul(h ^ str.charCodeAt(i), 16777619);
+  return () => {
+    h = (h + 0x6d2b79f5) | 0;
+    let t = Math.imul(h ^ (h >>> 15), 1 | h);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+};
+const _syntheticCache = new Map();
+const _syntheticDispensers = (address, fuel) => {
+  const key = `${address}::${fuel}`;
+  if (_syntheticCache.has(key)) return _syntheticCache.get(key);
+  const rnd = _seeded(key);
+  const pick = (lo, hi) => lo + rnd() * (hi - lo);
+  const used = new Set();
+  const dispensers = [0, 1].map(() => {
+    let fip, nozzle;
+    do {
+      fip = 1 + Math.floor(rnd() * 6);
+      nozzle = 1 + Math.floor(rnd() * 4);
+    } while (used.has(`${fip}/${nozzle}`));
+    used.add(`${fip}/${nozzle}`);
+    const litresPerDay = pick(1100, 2300);
+    const salesPerDay = litresPerDay / pick(4.2, 5.6);
+    const vtot = pick(900000, 3600000);
+    const atot = vtot * pick(91, 97);
+    const local_id = Math.round(vtot / pick(4.4, 5.4));
+    const days = 30, t2 = _SERIES_REF + days * _DAY_MS;
+    return {
+      fip,
+      nozzle,
+      readings: [
+        { t: _SERIES_REF, local_id, atot, vtot },
+        { t: t2, local_id: local_id + salesPerDay * days, atot: atot + litresPerDay * days * 100, vtot: vtot + litresPerDay * days },
+      ],
+    };
+  });
+  _syntheticCache.set(key, dispensers);
+  return dispensers;
+};
+
 const _pumpKey = (organisation, address) => `${organisation}::${address}`;
 const ALL_PUMP_KEYS = FUEL_STATIONS.flatMap((st) => st.addresses.map((a) => _pumpKey(st.organisation, a)));
 const PUMPS_STORAGE_KEY = "fuel_selected_pumps";
@@ -215,7 +210,9 @@ const _loadSelectedPumps = () => {
   try {
     const saved = JSON.parse(localStorage.getItem(PUMPS_STORAGE_KEY) || "null");
     if (Array.isArray(saved)) {
-      const valid = saved.filter((k) => ALL_PUMP_KEYS.includes(k));
+      // The Noorpur pump used to be listed twice under two spellings.
+      const merged = saved.map((k) => k.replace("::BP BADSHAPUR, VILL NOORPUR, GURUGRAM HR", `::${BADSHAHPUR_ADDRESS}`));
+      const valid = [...new Set(merged)].filter((k) => ALL_PUMP_KEYS.includes(k));
       if (valid.length) return valid;
     }
   } catch (e) {}
@@ -241,7 +238,6 @@ export default class FuelBill extends Component {
     const initialStart = `${_currentMonth()}-01`;
     const initialEnd = _todayStr();
     const initialFuel = _loadFuelType();
-    const initialAutoRate = _avgRateForRange(initialStart, initialEnd, initialFuel);
     const last = (k, fb) => (getHistory(HISTORY_KEYS[k])[0] ?? fb);
     this.state = {
       fuel_type: initialFuel,
@@ -253,14 +249,14 @@ export default class FuelBill extends Component {
       pdf_view: false,
       sum_amount: 0,
       sum_ltrs: 0,
-      month_mode: false,
-      crumpled: false,
+      month_mode: true,
       range_start: initialStart,
       range_end: initialEnd,
       selected_pumps: _loadSelectedPumps(),
       number_of_bills: last("number_of_bills", "1"),
-      petrol_rate: initialAutoRate || _latestRate(initialFuel),
-      petrol_rate_auto: !!initialAutoRate,
+      // Empty = each bill takes the rate of its own day; a typed rate is used on
+      // every bill instead.
+      petrol_rate: "",
       fuel_stations: FUEL_STATIONS,
     };
   }
@@ -272,32 +268,11 @@ export default class FuelBill extends Component {
   _setFuelType = (fuel) => {
     if (fuel === this.state.fuel_type) return;
     try { localStorage.setItem(FUEL_STORAGE_KEY, fuel); } catch (e) {}
-    const { range_start, range_end, petrol_rate_auto } = this.state;
-    const autoRate = _avgRateForRange(range_start, range_end, fuel);
     // A typed rate was for the other fuel, so it never carries over.
-    this.setState({
-      fuel_type: fuel,
-      petrol_rate: autoRate || (petrol_rate_auto ? _latestRate(fuel) : ""),
-      petrol_rate_auto: !!autoRate,
-    });
+    this.setState({ fuel_type: fuel, petrol_rate: "" });
   };
 
   onChange = (e, id) => {
-    if (id === "range_start" || id === "range_end") {
-      const next = { range_start: this.state.range_start, range_end: this.state.range_end, [id]: e.target.value };
-      const autoRate = _avgRateForRange(next.range_start, next.range_end, this.state.fuel_type);
-      this.setState({
-        [id]: e.target.value,
-        ...(autoRate
-          ? { petrol_rate: autoRate, petrol_rate_auto: true }
-          : { petrol_rate_auto: false }),
-      });
-      return;
-    }
-    if (id === "petrol_rate") {
-      this.setState({ petrol_rate: e.target.value, petrol_rate_auto: false });
-      return;
-    }
     this.setState({ [id]: e.target.value });
   };
 
@@ -318,22 +293,26 @@ export default class FuelBill extends Component {
     return pool[Math.floor(Math.random() * pool.length)];
   };
 
-  // Counter fields for pumps with a known totalizer series; {} for the rest, which
-  // keep their random values.  Bills are at least a day apart and a dispenser does
-  // ~1500 L / ~350 sales a day, so the jitter never makes the series run backwards.
+  // Counter fields placing the bill on its pump's series: the real Badshahpur
+  // petrol readings, or the pump's invented series otherwise.  Bills are at least
+  // a day apart and a dispenser does ~1500 L / ~350 sales a day, so the jitter
+  // never makes a series run backwards.
   _totalizerFields = (address, dateStr, timeStr, rate) => {
-    // The anchored counters are the petrol nozzles' own; diesel keeps random ones.
-    if (address !== BADSHAHPUR_ADDRESS || this.state.fuel_type !== "petrol") return {};
-    const dispenser = BADSHAHPUR_DISPENSERS[Math.floor(Math.random() * BADSHAHPUR_DISPENSERS.length)];
+    const fuel = this.state.fuel_type;
+    const pool = address === BADSHAHPUR_ADDRESS && fuel === "petrol" ? BADSHAHPUR_DISPENSERS : _syntheticDispensers(address, fuel);
+    const dispenser = pool[Math.floor(Math.random() * pool.length)];
     const [y, mo, d] = dateStr.split("-").map(Number);
     const [h, mi] = timeStr.split(":").map(Number);
     rate = parseFloat(rate);
     const r = _dispenserReading(dispenser, new Date(y, mo - 1, d, h, mi).getTime(), rate);
     const dv = (Math.random() - 0.5) * 40;
+    const sale = Math.round(r.local_id + this._generateRandomNumber(-15, 15));
     return {
       bay_no: dispenser.fip,
       nozzle_no: dispenser.nozzle,
-      local_id: String(Math.round(r.local_id + this._generateRandomNumber(-15, 15))).padStart(8, "0"),
+      local_id: String(sale).padStart(8, "0"),
+      // HP and IndianOil print the dispenser's transaction counter as Trns.ID.
+      trns_id: String(sale).padStart(16, "0"),
       atot: (r.atot + dv * rate).toFixed(2).padStart(14, "0"),
       vtot: (r.vtot + dv).toFixed(2).padStart(14, "0"),
     };
@@ -369,19 +348,18 @@ export default class FuelBill extends Component {
     return Math.abs(hash);
   };
 
+  // Transaction start, end and print time, a few minutes apart.  Built from
+  // seconds since midnight so minutes and seconds carry over instead of
+  // printing impossible times like 20:60.
   _getTime = () => {
-    let ran_time1 = `${this._generateRandomNumber(10, 22)}:${this._generateRandomNumber(10, 54)}:${this._generateRandomNumber(10, 54)}`;
-    let [hour, min, sec] = ran_time1.split(":");
-    min = parseInt(min) + parseInt(this._generateRandomNumber(1, 2));
-    sec = parseInt(sec) + parseInt(this._generateRandomNumber(1, 2));
-    let ran_time2 = `${hour}:${min}:${sec}`;
-    min = parseInt(min) + parseInt(this._generateRandomNumber(3, 5));
-    sec = parseInt(sec) + parseInt(this._generateRandomNumber(3, 5));
-    let ran_time3 = `${hour}:${min}:${sec}`;
+    const fmt = (t) => [Math.floor(t / 3600), Math.floor(t / 60) % 60, t % 60].map((n) => String(n).padStart(2, "0")).join(":");
+    const start = this._generateRandomNumber(10, 22) * 3600 + this._generateRandomNumber(0, 59) * 60 + this._generateRandomNumber(0, 59);
+    const end = start + this._generateRandomNumber(60, 130);
+    const printed = end + this._generateRandomNumber(180, 310);
     return {
-      time: ran_time3,
-      txnSt: ran_time1,
-      txnEnd: ran_time2,
+      time: fmt(printed),
+      txnSt: fmt(start),
+      txnEnd: fmt(end),
     };
   };
 
@@ -505,14 +483,8 @@ export default class FuelBill extends Component {
         fuel_station_address: fuel_address,
         fuel_station_tin: "06" + String(this._hashString(fuel_address)).padStart(9, '3').slice(-9),
         fuel_station_ph: "9" + String(this._hashString(fuel_address + "ph")).padStart(9, '8').slice(-9),
-        auth_code: String(this._generateRandomNumber(10000, 99999)),
         paddingTop: this._generateRandomNumber(15, 35) + 'mm',
         paddingBottom: this._generateRandomNumber(20, 40) + 'mm',
-        rrn: `6201${this._generateRandomNumber(1000007, 9999999)}`,
-        paytm_txn1: `2026${fuel_value.date.replace(/-/g, "")}011${this._generateRandomNumber(10000000, 99999999)}`,
-        paytm_txn2: `7414${this._generateRandomNumber(1000000, 9999999)}`,
-        paytm_order1: `2026${fuel_value.date.replace(/-/g, "")}160${this._generateRandomNumber(100000, 999999)}`,
-        paytm_order2: `2720${this._generateRandomNumber(1000, 9999)}`,
         card_no: `************${this._generateRandomNumber(1000, 9999)}`,
         bank_mid: `5PR000001735416`,
         bank_tid: `PA0${this._generateRandomNumber(50000, 59999)}`,
@@ -617,7 +589,7 @@ export default class FuelBill extends Component {
       let dateStr = new Date(range_start_ms + day_offsets[i] * _DAY_MS).toISOString().split("T")[0];
       
       let rate;
-      if (this.state.petrol_rate_auto === false && this.state.petrol_rate) {
+      if (String(this.state.petrol_rate).trim() !== "" && !isNaN(parseFloat(this.state.petrol_rate))) {
         rate = parseFloat(this.state.petrol_rate).toFixed(2);
       } else {
         rate = getClosestStoredRate(dateStr);
@@ -658,14 +630,8 @@ export default class FuelBill extends Component {
         fuel_station_address: fuel_address,
         fuel_station_tin: "06" + String(this._hashString(fuel_address)).padStart(9, '3').slice(-9),
         fuel_station_ph: "9" + String(this._hashString(fuel_address + "ph")).padStart(9, '8').slice(-9),
-        auth_code: String(this._generateRandomNumber(10000, 99999)),
         paddingTop: this._generateRandomNumber(15, 35) + 'mm',
         paddingBottom: this._generateRandomNumber(20, 40) + 'mm',
-        rrn: `6201${this._generateRandomNumber(1000007, 9999999)}`,
-        paytm_txn1: `2026${fuel_value.date.replace(/-/g, "")}011${this._generateRandomNumber(10000000, 99999999)}`,
-        paytm_txn2: `7414${this._generateRandomNumber(1000000, 9999999)}`,
-        paytm_order1: `2026${fuel_value.date.replace(/-/g, "")}160${this._generateRandomNumber(100000, 999999)}`,
-        paytm_order2: `2720${this._generateRandomNumber(1000, 9999)}`,
         card_no: `************${this._generateRandomNumber(1000, 9999)}`,
         bank_mid: `5PR000001735416`,
         bank_tid: `PA0${this._generateRandomNumber(50000, 59999)}`,
@@ -767,21 +733,6 @@ export default class FuelBill extends Component {
     window.print();
   };
 
-  handleDownloadImages = async () => {
-    const pages = document.querySelectorAll('.fuel-crumpled-photo-page');
-    for (let i = 0; i < pages.length; i++) {
-      try {
-        const imgData = await htmlToImage.toJpeg(pages[i], { quality: 0.95, pixelRatio: 2 });
-        const link = document.createElement('a');
-        link.href = imgData;
-        link.download = `paytm_receipt_page_${i + 1}.jpg`;
-        link.click();
-      } catch (err) {
-        console.error("Error generating image:", err);
-      }
-    }
-  };
-
   handleDownloadMultiplePDFs = async () => {
     const pages = document.querySelectorAll('.thermal-58mm');
     if (pages.length === 0) return;
@@ -841,8 +792,9 @@ export default class FuelBill extends Component {
   };
 
   render() {
-    const { amount, mean, bills, pdf_view, total_number_of_bills, sum_amount, sum_ltrs, month_mode, number_of_bills, petrol_rate, petrol_rate_auto, crumpled, range_start, range_end, fuel_stations, selected_pumps, fuel_type } = this.state;
+    const { amount, mean, bills, pdf_view, total_number_of_bills, sum_amount, sum_ltrs, month_mode, number_of_bills, petrol_rate, range_start, range_end, fuel_stations, selected_pumps, fuel_type } = this.state;
     const fuelLabel = FUELS[fuel_type].label;
+    const avgRate = month_mode ? _avgRateForRange(range_start, range_end, fuel_type) : null;
     return (
       <div className="">
         {!pdf_view ? (
@@ -850,7 +802,8 @@ export default class FuelBill extends Component {
             <h2 className="bg-card-title">Fuel Bill Generator</h2>
             <p className="bg-card-desc">Generate realistic {fuelLabel.toLowerCase()} bills with date and rate spread for your selected period.</p>
 
-            <div className="bg-mode" role="tablist">
+            <div className="bg-mode-row">
+            <div className="bg-mode" role="tablist" aria-label="Period">
               <button
                 type="button"
                 className={`bg-mode-btn ${!month_mode ? "active" : ""}`}
@@ -866,18 +819,6 @@ export default class FuelBill extends Component {
                 Date Range
               </button>
             </div>
-
-            <div className="bg-mode" role="tablist" aria-label="Fuel">
-              {Object.keys(FUELS).map((key) => (
-                <button
-                  key={key}
-                  type="button"
-                  className={`bg-mode-btn ${fuel_type === key ? "active" : ""}`}
-                  onClick={() => this._setFuelType(key)}
-                >
-                  {FUELS[key].label}
-                </button>
-              ))}
             </div>
 
             {month_mode ? (
@@ -923,18 +864,31 @@ export default class FuelBill extends Component {
                   />
                 </div>
                 <div className="bg-field">
-                  <label className="bg-label">{fuelLabel} Rate <span className="bg-label-hint">optional — auto-fills from history</span></label>
+                  <span className="bg-label">Fuel</span>
+                  <div className="bg-mode bg-mode-input" role="tablist" aria-label="Fuel">
+                    {Object.keys(FUELS).map((key) => (
+                      <button
+                        key={key}
+                        type="button"
+                        className={`bg-mode-btn ${fuel_type === key ? "active" : ""}`}
+                        onClick={() => this._setFuelType(key)}
+                      >
+                        {FUELS[key].label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="bg-field">
+                  <label className="bg-label">{fuelLabel} Rate <span className="bg-label-hint">optional</span></label>
                   <input
                     className="bg-input"
                     type="number"
                     step="0.01"
-                    placeholder="auto"
+                    placeholder={`Rate of the day${avgRate ? ` (avg ₹${avgRate})` : ""}`}
                     value={petrol_rate}
                     onChange={(e) => this.onChange(e, "petrol_rate")}
                   />
-                  {petrol_rate_auto ? (
-                    <span className="bg-hint bg-hint-success">Average for {range_start} to {range_end}. Each bill uses the rate on its own date; type a rate to use one fixed rate on every bill.</span>
-                  ) : null}
+                  <span className="bg-hint">Leave empty to use each bill's own day's rate. A rate typed here goes on every bill.</span>
                 </div>
               </div>
             ) : (
@@ -958,6 +912,21 @@ export default class FuelBill extends Component {
                     value={mean}
                     onChange={(e) => this.onChange(e, "mean")}
                   />
+                </div>
+                <div className="bg-field">
+                  <span className="bg-label">Fuel</span>
+                  <div className="bg-mode bg-mode-input" role="tablist" aria-label="Fuel">
+                    {Object.keys(FUELS).map((key) => (
+                      <button
+                        key={key}
+                        type="button"
+                        className={`bg-mode-btn ${fuel_type === key ? "active" : ""}`}
+                        onClick={() => this._setFuelType(key)}
+                      >
+                        {FUELS[key].label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
@@ -1009,14 +978,6 @@ export default class FuelBill extends Component {
               >
                 Generate Bills
               </button>
-              <label className="fuel-crumple-toggle">
-                <input
-                  type="checkbox"
-                  checked={crumpled}
-                  onChange={(e) => this.setState({ crumpled: e.target.checked })}
-                />
-                <span>Crumpled sample preview</span>
-              </label>
             </div>
 
             {!month_mode ? (
@@ -1035,55 +996,33 @@ export default class FuelBill extends Component {
                 <span className="bg-result-stat">Total amount: <strong>₹ {sum_amount}</strong></span>
                 <span className="bg-result-stat">Total litres: <strong>{sum_ltrs}</strong></span>
               </div>
-              <button onClick={() => window.location.reload()} type="button" className="bg-btn bg-btn-primary">
-                Generate More
-              </button>
-              {crumpled ? (
-                <button onClick={this.handleDownloadImages} type="button" className="bg-btn" style={{ marginLeft: '10px', backgroundColor: '#28a745', color: '#fff' }}>
-                  Download as Image(s)
+              <div className="bg-result-actions">
+                <button onClick={() => window.location.reload()} type="button" className="bg-btn bg-btn-ghost">
+                  ← New bills
                 </button>
-              ) : (
-                <>
-                  <button onClick={this.handlePrint58} type="button" className="bg-btn" style={{ marginLeft: '10px', backgroundColor: '#0d6efd', color: '#fff' }}>
-                    Print 58mm
-                  </button>
-                  <button onClick={this.handleDownloadSinglePDF} type="button" className="bg-btn" style={{ marginLeft: '10px', backgroundColor: '#dc3545', color: '#fff' }}>
-                    Download Single PDF
-                  </button>
-                  <button onClick={this.handleDownloadMultiplePDFs} type="button" className="bg-btn" style={{ marginLeft: '10px', backgroundColor: '#dc3545', color: '#fff' }}>
-                    Download Multiple PDFs
-                  </button>
-                </>
-              )}
-            </div>
-
-            {crumpled ? (
-              <div className="fuel-crumpled-pages-wrapper">
-                <style>{`
-                  @media print {
-                    @page { size: landscape; margin: 0; }
-                  }
-                `}</style>
-                {Array.from({ length: Math.ceil(bills.length / 2) }).map((_, pageIdx) => {
-                  const billLeft = bills[pageIdx * 2];
-                  const billRight = bills[pageIdx * 2 + 1];
-                  return (
-                    <div className="fuel-crumpled-photo-page" key={pageIdx}>
-                      <div className="fuel-crumpled-bg-wrapper">
-                        <img
-                          src={process.env.PUBLIC_URL + "/images/crumpled_base.jpeg"}
-                          alt="Crumpled sample preview"
-                          className="fuel-crumpled-bg-img"
-                        />
-                        {billLeft && <PaytmReceiptOverlay bill={billLeft} position="left" />}
-                        {billRight && <PaytmReceiptOverlay bill={billRight} position="right" />}
-                      </div>
-                    </div>
-                  );
-                })}
+                <button onClick={this.handleDownloadSinglePDF} type="button" className="bg-btn bg-btn-secondary">
+                  Single PDF
+                </button>
+                <button onClick={this.handleDownloadMultiplePDFs} type="button" className="bg-btn bg-btn-secondary">
+                  PDF per bill
+                </button>
+                <button onClick={this.handlePrint58} type="button" className="bg-btn bg-btn-primary">
+                  Print 58mm
+                </button>
               </div>
-            ) : (
-              <div className="fuel-print-grid">
+            </div>
+            <div className="noprint bg-callout">
+                <span className="bg-callout-icon" aria-hidden="true">🖨</span>
+                <div>
+                  <strong>Printing on a 58mm thermal printer from a Mac?</strong>{" "}
+                  Get the <a href={`${process.env.PUBLIC_URL}/downloads/Print58.dmg`} download>Print58 app</a>,
+                  drag it to Applications, then drop the downloaded PDF on it. It pauses after each receipt so you can tear it off.
+                  {" "}First launch is blocked because it isn't notarized by Apple: click Done, then System Settings → Privacy &amp; Security → Open Anyway.
+                  {" "}Needs Ghostscript (<code>brew install ghostscript</code>) and Python Pillow. Prefer Terminal? Use <a href={`${process.env.PUBLIC_URL}/downloads/print58.sh`} download>print58.sh</a>.
+                </div>
+              </div>
+
+            <div className="fuel-print-grid">
                 <style>{`
                   @media print {
                     @page { size: 58mm auto; margin: 0; }
@@ -1263,7 +1202,6 @@ export default class FuelBill extends Component {
                   );
                 })}
               </div>
-            )}
           </>
         )}
       </div>

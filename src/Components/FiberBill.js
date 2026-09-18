@@ -58,7 +58,7 @@ export default class FiberBill extends Component {
     const fyStartYear = now.getMonth() >= 3 ? now.getFullYear() : now.getFullYear() - 1;
     const last = (k, fb) => (getHistory(HISTORY_KEYS[k])[0] ?? fb);
     this.state = {
-      mode: "year",
+      mode: "single",
       customerName: last("customerName", ""),
       accountNumber: last("accountNumber", ""),
       dslNumber: last("dslNumber", ""),
