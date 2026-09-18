@@ -23,3 +23,10 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Photos of real receipts must never land in public/ -- everything there is
+# copied into build/ and published by `npm run deploy`, where the login gate
+# does not apply to static assets.
+public/images/*.HEIC
+public/images/IMG_*.jpg
+public/images/IMG_*.jpeg

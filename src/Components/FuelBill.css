@@ -36918,20 +36918,28 @@ input[type="color"].form-control:disabled {
   color: black;
   font-family: 'Courier New', Courier, monospace;
   font-size: 11px;
-  line-height: 1.2;
-  margin: 10px auto;
-  padding: 5mm;
+  line-height: 1.25;
+  margin: 15px auto;
+  padding: 20mm 4.5mm 25mm 4.5mm;
   box-sizing: border-box;
   text-align: left;
   border: none;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 @media print {
   .thermal-58mm {
     border: none;
-    margin: 0;
-    padding: 0;
+    width: 48mm;
+    margin: 0 auto;
     page-break-after: always;
     break-after: page;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    box-shadow: none;
+  }
+  .thermal-58mm:last-child {
+    page-break-after: auto;
+    break-after: auto;
   }
 }
 .thermal-receipt-body {
@@ -36939,7 +36947,7 @@ input[type="color"].form-control:disabled {
 }
 .thermal-logo-container {
   text-align: center;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
 }
 .thermal-logo {
   max-width: 60px;
@@ -36952,7 +36960,7 @@ input[type="color"].form-control:disabled {
 }
 .thermal-header {
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   font-size: 10px;
 }
 .thermal-details {
@@ -36971,3 +36979,173 @@ input[type="color"].form-control:disabled {
   word-break: break-all;
 }
 
+/* Bharat Petroleum Specific Styles */
+.bpcl-receipt {
+  font-family: 'Consolas', 'Courier New', Courier, monospace;
+  font-size: 9.5px;
+  line-height: 1.35;
+  color: #000;
+  text-align: left;
+  letter-spacing: -0.1px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.bpcl-logo-container {
+  text-align: center;
+  margin: 0 auto 10px auto;
+}
+.bpcl-logo {
+  max-width: 60px;
+  filter: grayscale(100%);
+  display: block;
+  margin: 0 auto;
+}
+.bpcl-welcomes {
+  text-align: center;
+  font-size: 11.5px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  margin: 10px 0 8px 0;
+}
+.bpcl-address {
+  margin-bottom: 16px;
+  line-height: 1.3;
+  text-align: left;
+}
+.bpcl-details {
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.bpcl-row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: baseline;
+  white-space: nowrap;
+}
+.bpcl-label {
+  width: 76px;
+  flex-shrink: 0;
+}
+.bpcl-val {
+  flex-grow: 1;
+  white-space: nowrap;
+}
+.bpcl-row-tot {
+  display: flex;
+  justify-content: flex-start;
+  align-items: baseline;
+  white-space: nowrap;
+}
+.bpcl-label-tot {
+  width: 40px;
+  flex-shrink: 0;
+}
+.bpcl-val-tot {
+  flex-grow: 1;
+  white-space: nowrap;
+}
+.bpcl-vehicle-info {
+  margin-bottom: 16px;
+  line-height: 1.35;
+  text-align: left;
+  white-space: nowrap;
+}
+.bpcl-datetime {
+  margin-bottom: 18px;
+  text-align: left;
+  white-space: nowrap;
+}
+.bpcl-tax-section {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  text-align: left;
+}
+.bpcl-tax-row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: baseline;
+  white-space: nowrap;
+}
+.bpcl-tax-label {
+  width: 88px;
+  flex-shrink: 0;
+}
+.bpcl-tax-val {
+  flex-grow: 1;
+  white-space: nowrap;
+}
+.bpcl-bottom-code {
+  font-size: 9.5px;
+  text-align: left;
+  margin-top: 10px;
+}
+
+/* HPCL Specific Styles */
+.hpcl-receipt {
+  font-family: 'Courier New', Courier, monospace;
+}
+.hpcl-header {
+  text-align: center;
+  margin-bottom: 10px;
+}
+.hpcl-logo {
+  max-width: 45px;
+  filter: grayscale(100%);
+  margin-bottom: 5px;
+}
+.hpcl-brand-name {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+.hpcl-address {
+  margin-bottom: 5px;
+}
+.hpcl-details {
+  margin-bottom: 15px;
+  border-top: 1px dashed #000;
+  border-bottom: 1px dashed #000;
+  padding: 5px 0;
+}
+.hpcl-row {
+  display: flex;
+}
+.hpcl-label {
+  width: 70px;
+  flex-shrink: 0;
+}
+.hpcl-val {
+  flex-grow: 1;
+  word-break: break-all;
+}
+.hpcl-footer {
+  text-align: center;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+
+/* Petrol pump picker on the generator form */
+.fuel-pumps { margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
+.fuel-pumps-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.fuel-pumps-bulk { display: flex; gap: 12px; }
+.fuel-pumps-link { background: none; border: 0; padding: 0; color: #2563eb; font-size: 13px; cursor: pointer; }
+.fuel-pumps-link:hover { text-decoration: underline; }
+.fuel-pumps-group {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 12px 10px;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 6px 16px;
+}
+.fuel-pumps-group legend { padding: 0 4px; float: none; width: auto; margin: 0; font-size: inherit; }
+.fuel-pumps-item { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: #334155; cursor: pointer; margin: 0; line-height: 1.35; }
+.fuel-pumps-item input { width: 15px; height: 15px; margin-top: 1px; flex-shrink: 0; cursor: pointer; }
+.fuel-pumps-org { font-weight: 600; color: #0f172a; }
+.fuel-pumps-warn { color: #dc2626; }
