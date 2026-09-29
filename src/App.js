@@ -3,6 +3,7 @@ import "./App.css";
 import "./app-shell.css";
 import FuelBill from "./Components/FuelBill";
 import FiberBill from "./Components/FiberBill";
+import AirtelBlackBill from "./Components/AirtelBlackBill";
 import DriverSalary from "./Components/DriverSalary";
 import RentReceipt from "./Components/RentReceipt";
 import MedicalInsurance from "./Components/MedicalInsurance";
@@ -24,7 +25,15 @@ if (TRACKING_ID) {
 // a switcher above the form to pick between them.
 const GENERATORS = [
   { id: "fuel", label: "Fuel Bill", component: FuelBill, available: true },
-  { id: "fiber", label: "Fiber Bill", component: FiberBill, available: true },
+  {
+    id: "fiber",
+    label: "Fiber Bill",
+    available: true,
+    options: [
+      { id: "fiber-receipt", label: "Payment Receipt", component: FiberBill },
+      { id: "fiber-airtel-black", label: "Airtel Black Statement", component: AirtelBlackBill },
+    ],
+  },
   { id: "driver", label: "Driver Salary", component: DriverSalary, available: true },
   { id: "rent", label: "Rent Receipt", component: RentReceipt, available: true },
   {

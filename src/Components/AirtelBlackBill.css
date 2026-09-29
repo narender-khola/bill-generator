@@ -1,0 +1,314 @@
+/* One .ab-page = one printed A4 sheet (A4 minus the 14mm/12mm @page margins). */
+.ab-page {
+  position: relative;
+  background: #ffffff;
+  width: 186mm;
+  height: 268mm;
+  margin: 0 auto 27.6px;
+  padding: 0;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 10.3px;
+  color: #111;
+  line-height: 1.35;
+  box-sizing: border-box;
+  overflow: hidden;
+  outline: 1px solid #e2e8f0;
+  page-break-after: always;
+  break-after: page;
+}
+.ab-page:last-child { page-break-after: auto; break-after: auto; }
+
+.ab-page * { box-sizing: border-box; }
+.ab-page table { border-collapse: collapse; width: 100%; }
+
+.ab-logo { height: 39.1px; width: auto; display: block; }
+.ab-logo-light { height: 29.9px; filter: brightness(0) invert(1); }
+
+.ab-muted { color: #6b7280; font-size: 10.3px; margin-top: 6.9px; }
+.ab-strong { font-weight: 700; font-size: 10.9px; margin-top: 2.3px; }
+.ab-bold { font-weight: 700; }
+.ab-red { color: #e40000; }
+.ab-right { text-align: right; }
+.ab-center { justify-content: center !important; }
+.ab-white { color: #fff !important; font-weight: 700; }
+.ab-tiny { font-size: 8px; margin-top: 2.3px; }
+.ab-pb { font-size: 6.9px; color: #e40000; }
+.ab-link { color: #1d4ed8; text-decoration: underline; font-size: 9.2px; margin-top: 9.2px; }
+
+/* ---------- Black Monthly Statement ---------- */
+.ab-black-head {
+  background: #000;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 11.5px 20.7px;
+  border-radius: 0 0 16.1px 16.1px;
+  font-size: 17.2px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+}
+
+.ab-black-top {
+  display: flex;
+  gap: 27.6px;
+  padding: 20.7px 20.7px 0 34.5px;
+}
+.ab-black-cust { flex: 1; }
+.ab-cust-name { font-size: 12.6px; margin-bottom: 4.6px; }
+.ab-plan-label { font-weight: 700; font-size: 11.5px; margin-top: 11.5px; }
+.ab-plan-name { font-weight: 700; font-size: 11.5px; }
+.ab-kv-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 13.8px;
+  row-gap: 4.6px;
+  margin-top: 6.9px;
+}
+
+.ab-pay-box {
+  width: 90mm;
+  border: 1px solid #111;
+  border-radius: 9.2px;
+  overflow: hidden;
+}
+.ab-pay-box-top {
+  display: flex;
+  justify-content: space-between;
+  padding: 6.9px 11.5px 9.2px;
+  border-bottom: 1px solid #111;
+}
+.ab-big { font-size: 17.2px; font-weight: 700; margin-top: 2.3px; }
+.ab-pay-box-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9.2px 11.5px;
+}
+.ab-pay-via { flex: 1; text-align: center; font-size: 12.6px; font-weight: 700; line-height: 1.8; }
+.ab-qr-block { text-align: center; }
+
+.ab-dark-strip {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  background: #333;
+  color: #fff;
+  margin: 16.1px 13.8px 0;
+  padding: 11.5px 16.1px 13.8px;
+  border-radius: 4.6px;
+  gap: 4.6px;
+}
+.ab-dark-strip > div { display: flex; flex-direction: column; gap: 11.5px; }
+.ab-dark-strip span { color: #d1d5db; font-size: 8.6px; }
+.ab-dark-strip b { font-size: 10.9px; font-weight: 400; }
+.ab-dark-strip > div:nth-last-child(-n+2) b { font-weight: 700; }
+.ab-dark-strip em { font-style: normal; font-weight: 700; padding-top: 20.7px; }
+
+.ab-box {
+  border: 1px solid #111;
+  border-radius: 4.6px;
+  margin: 13.8px 13.8px 0;
+  padding-bottom: 9.2px;
+  overflow: hidden;
+}
+.ab-box-head {
+  background: #333;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6.9px 13.8px;
+  font-size: 12.6px;
+  font-weight: 700;
+}
+.ab-box-head small { font-size: 8.6px; font-weight: 400; }
+
+.ab-sum-table { margin: 6.9px 0 0; }
+.ab-sum-table th, .ab-sum-table td { padding: 4.6px 11.5px; text-align: center; }
+.ab-sum-table th { font-size: 10.3px; border-bottom: 1px solid #111; }
+.ab-sum-table td { font-size: 9.2px; font-weight: 700; border-bottom: 1px solid #d1d5db; }
+.ab-sum-table th:first-child, .ab-sum-table td:first-child { text-align: left; }
+.ab-sum-table th:last-child, .ab-sum-table td:last-child { text-align: right; }
+.ab-row-strong td { border-bottom: 1px solid #111; }
+
+.ab-total-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 9.2px 11.5px 4.6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  border-bottom: 1px solid #111;
+  margin: 0 0 0;
+}
+.ab-words { padding: 6.9px 11.5px 0; font-size: 9.8px; }
+.ab-box .ab-words { font-weight: 700; }
+
+.ab-line-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 5.8px 11.5px;
+  font-size: 9.2px;
+  border-bottom: 1px solid #111;
+}
+.ab-lg { font-size: 10.9px; }
+
+.ab-hist-table th, .ab-hist-table td {
+  border: 1px solid #9ca3af;
+  padding: 4.6px 4.6px;
+  text-align: center;
+  font-size: 8.6px;
+}
+.ab-hist-table th { font-weight: 400; }
+
+/* ---------- Fixed-line tax invoice ---------- */
+.ab-inv { padding: 0 6.9px; }
+.ab-inv-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 6.9px 0 18.4px;
+}
+.ab-inv-title { font-size: 18.4px; font-weight: 700; letter-spacing: 0.2px; }
+.ab-inv-sub { color: #6b7280; font-size: 9.2px; font-weight: 700; margin-top: 2.3px; }
+.ab-inv-ids { color: #6b7280; font-size: 11.5px; }
+.ab-inv-ids span { color: #111; font-size: 10.3px; }
+.ab-inv-head .ab-logo { margin-top: 9.2px; height: 34.5px; }
+
+.ab-bar {
+  background: #000;
+  color: #fff;
+  font-size: 12.6px;
+  font-weight: 700;
+  padding: 8px 13.8px;
+}
+.ab-bar-split { display: flex; justify-content: space-between; align-items: center; }
+.ab-bar-split small { font-size: 9.2px; font-weight: 400; }
+
+.ab-inv-split {
+  display: flex;
+  border-left: 1px solid #111;
+  border-right: 1px solid #111;
+  border-bottom: 1px solid #d1d5db;
+  padding: 11.5px 0 16.1px;
+  margin-bottom: 11.5px;
+  font-size: 9.2px;
+}
+.ab-inv-split > div { flex: 1; padding: 0 11.5px; }
+.ab-inv-split > div:first-child { border-right: 1px solid #111; }
+.ab-inv-addr div { margin-bottom: 1px; }
+.ab-barcode { display: block; height: 25.3px; width: 184px; margin-bottom: 4.6px; }
+.ab-two { display: flex; justify-content: space-between; max-width: 184px; font-size: 8px; }
+.ab-inv-bar-col .ab-gap { margin-top: 6.9px; max-width: none; font-size: 9.2px; }
+
+.ab-kv > div { display: flex; justify-content: space-between; margin-bottom: 2.3px; }
+.ab-kv span { font-weight: 400; }
+.ab-kv b { font-weight: 700; }
+
+.ab-strip-black {
+  background: #000;
+  margin: 0 0 13.8px;
+  border-radius: 0;
+}
+
+.ab-charges {
+  border-left: 1px solid #111;
+  border-right: 1px solid #111;
+  border-bottom: 1px solid #d1d5db;
+  padding: 13.8px 0 11.5px;
+}
+.ab-charges .ab-line-row { border-bottom: 1px solid #d1d5db; }
+.ab-note { color: #6b7280; font-size: 8.6px; font-weight: 700; padding: 4.6px 0; }
+
+.ab-inv-foot {
+  position: absolute;
+  left: 6.9px;
+  right: 6.9px;
+  bottom: 23px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+.ab-sign { font-size: 8.6px; line-height: 1.5; padding-left: 9.2px; }
+.ab-sign-script {
+  font-family: "Brush Script MT", "Segoe Script", cursive;
+  font-size: 17.2px;
+  margin: 9.2px 0 11.5px;
+}
+.ab-upi { text-align: center; font-size: 8px; line-height: 1.4; }
+.ab-upi svg { display: block; margin: 2.3px auto; }
+.ab-bhim { font-style: italic; font-weight: 700; color: #6b7280; font-size: 10.3px; }
+.ab-page-no { position: absolute; right: 13.8px; bottom: 4.6px; font-size: 8.6px; }
+
+/* ---------- Charges in detail ---------- */
+.ab-det-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 9.8px;
+  padding: 4.6px 0 13.8px;
+}
+.ab-det-head .ab-logo { height: 29.9px; }
+.ab-det-title {
+  color: #e40000;
+  font-weight: 700;
+  font-size: 13.8px;
+  border-bottom: 1px solid #e40000;
+  padding-bottom: 3.4px;
+  margin-bottom: 9.2px;
+}
+.ab-sec { color: #e40000; font-weight: 700; font-size: 10.3px; margin: 11.5px 0 3.4px; }
+.ab-det-table th {
+  text-align: right;
+  font-size: 9.2px;
+  font-weight: 700;
+  padding: 3.4px 4.6px;
+  border-top: 1px solid #111;
+  border-bottom: 1px solid #111;
+}
+.ab-det-table td { text-align: right; font-size: 8.6px; padding: 3.4px 4.6px; }
+.ab-det-table th:first-child, .ab-det-table td:first-child { text-align: left; }
+.ab-det-table th:last-child, .ab-det-table .ab-tot { border-left: 1px solid #111; font-size: 9.8px; }
+.ab-det-table tbody tr:last-child td { border-bottom: 1px solid #d1d5db; }
+.ab-mid { vertical-align: middle; }
+.ab-tax-table th { text-align: center; }
+.ab-tax-table td { text-align: center; }
+.ab-tax-table td:nth-child(2) { text-align: center; }
+.ab-ruled { padding: 9.2px 4.6px 4.6px; border-bottom: 1px solid #111; margin-top: 6.9px; }
+
+.ab-plan-box {
+  margin-top: 13.8px;
+  border: 1px solid #111;
+  font-size: 8.6px;
+  padding: 0 0 6.9px;
+}
+.ab-plan-box > div { padding: 0 6.9px; }
+.ab-plan-head { background: #000; color: #fff; font-weight: 700; font-size: 10.9px; padding: 3.4px 6.9px !important; }
+.ab-plan-row { display: flex; justify-content: space-between; font-size: 10.3px; padding-right: 115px !important; }
+.ab-plan-gap { margin-top: 13.8px; }
+
+.ab-fine {
+  position: absolute;
+  left: 6.9px;
+  right: 6.9px;
+  bottom: 25.3px;
+  border: 1px solid #e40000;
+  padding: 9.2px 16.1px;
+  font-size: 7.6px;
+  line-height: 1.5;
+}
+.ab-fine p { margin: 0 0 2.3px; }
+
+.ab-check { display: flex; gap: 8px; align-items: center; font-size: 13px; padding-top: 8px; }
+
+@media (max-width: 760px) {
+  .ab-page { zoom: 0.5; }
+}
+
+@media print {
+  .ab-page { outline: 0; margin: 0 auto; zoom: 1; }
+  .ab-page, .ab-page * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
