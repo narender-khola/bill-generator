@@ -81,7 +81,7 @@ const Barcode = ({ value }) => {
 
 const AirtelLogo = ({ light }) => (
   <img
-    src={process.env.PUBLIC_URL + "/images/airtel-logo.png"}
+    src={process.env.PUBLIC_URL + (light ? "/images/airtel-logo-white.png" : "/images/airtel-logo.png")}
     alt="airtel"
     className={`ab-logo ${light ? "ab-logo-light" : ""}`}
   />

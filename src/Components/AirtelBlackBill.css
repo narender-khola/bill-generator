@@ -22,7 +22,7 @@
 .ab-page table { border-collapse: collapse; width: 100%; }
 
 .ab-logo { height: 39.1px; width: auto; display: block; }
-.ab-logo-light { height: 29.9px; filter: brightness(0) invert(1); }
+.ab-logo-light { height: 22px; }
 
 .ab-muted { color: #6b7280; font-size: 10.3px; margin-top: 6.9px; }
 .ab-strong { font-weight: 700; font-size: 10.9px; margin-top: 2.3px; }
