@@ -305,8 +305,14 @@
   .ab-page { zoom: 0.5; }
 }
 
+/* Full-bleed A4: the global @page margin would leave a white frame round
+   the black header and strips, so Airtel pages print on their own page box
+   and the 268mm-tall layout is zoomed up to the full 297mm (width 189.4mm
+   x 1.1082 = 210mm). */
+@page airtel { size: A4 portrait; margin: 0; }
+
 @media print {
-  .ab-page { outline: 0; margin: 0 auto; zoom: 1; }
+  .ab-page { page: airtel; width: 189.4mm; outline: 0; margin: 0; zoom: 1.1082; }
   .ab-page, .ab-page * {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;

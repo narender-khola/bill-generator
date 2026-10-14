@@ -629,6 +629,9 @@ export default class AirtelBlackBill extends Component {
               <button onClick={this.downloadCsv} type="button" className="bg-btn bg-btn-secondary">
                 Download CSV
               </button>
+              <button onClick={() => window.print()} type="button" className="bg-btn bg-btn-secondary">
+                Print / Save PDF
+              </button>
               <button onClick={() => window.location.reload()} type="button" className="bg-btn bg-btn-primary">
                 Generate More
               </button>
