@@ -64,9 +64,13 @@ export const applyLayers = (fuel, baseRows, { includeEdits = true } = {}) => {
   return [...byDate.values()].sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
 };
 
-// ---- Fetching from bankbazaar --------------------------------------------
-// bankbazaar sends no CORS header, so the browser goes through a public proxy.
-// These are free and flaky (rate limits, outages), so try each in turn.
+// ---- Fetching from goodreturns -------------------------------------------
+// The full daily history (scripts/fetch-petrol.js) needs a token that is only
+// issued with a goodreturns Referer, which a page on another site can't send.
+// So the button reads the "Last 10 Days" table off the public city page, which
+// is enough to keep the series current.  goodreturns sends no CORS header for
+// the page, so it goes through a public proxy; these are free and flaky (rate
+// limits, outages), so try each in turn.
 const PROXIES = [
   (u) => `https://api.cors.lol/?url=${encodeURIComponent(u)}`,
   (u) => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
@@ -74,66 +78,25 @@ const PROXIES = [
   (u) => `https://everyorigin.jwvbremen.nl/api/get?url=${encodeURIComponent(u)}`,
 ];
 
-// Same parsing as scripts/fetch-petrol.js: the page embeds a "pricesHistory"
-// JSON blob with ~6 months of daily rates.
-const extractJsonAfterKey = (html, key) => {
-  const at = html.indexOf(`"${key}"`);
-  if (at === -1) return null;
-  let i = html.indexOf(":", at) + 1;
-  while (i < html.length && /\s/.test(html[i])) i += 1;
-  const open = html[i];
-  const close = open === "[" ? "]" : open === "{" ? "}" : null;
-  if (!close) return null;
-  const start = i;
-  let depth = 0;
-  let inStr = false;
-  for (; i < html.length; i += 1) {
-    const c = html[i];
-    if (inStr) {
-      if (c === "\\") i += 1;
-      else if (c === '"') inStr = false;
-      continue;
-    }
-    if (c === '"') inStr = true;
-    else if (c === open) depth += 1;
-    else if (c === close) {
-      depth -= 1;
-      if (depth === 0) break;
-    }
-  }
-  try {
-    return JSON.parse(html.slice(start, i + 1));
-  } catch {
-    return null;
-  }
-};
+export const RATES_CITY = { slug: "gurgaon", label: "Gurugram" };
 
-const parseHistory = (html) => {
-  const hist = extractJsonAfterKey(html, "pricesHistory");
-  if (!Array.isArray(hist) || !hist.length) return [];
-  const meta = extractJsonAfterKey(html, "currentCity");
-  const cityId = meta && typeof meta.id === "number" ? meta.id : null;
+const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+// "October 13, 2026</td><td>&#x20b9;102.97</td>"
+const parseTable = (html) => {
+  const text = html.replace(/<script[\s\S]*?<\/script>/g, " ").replace(/<[^>]+>/g, "|").replace(/&#(8377|x20b9);/gi, "₹");
+  const re = new RegExp(`(${MONTHS.join("|")}) (\\d{1,2}), (20\\d{2})[|\\s]*₹\\s*([\\d.]+)`, "g");
   const byDate = new Map();
-  for (const row of hist) {
-    if (cityId !== null && row.cityId !== cityId) continue;
-    const rate = row && row.prices && row.prices["1L"];
-    if (!row.date || typeof rate !== "number") continue;
-    byDate.set(row.date, rate);
+  let m;
+  while ((m = re.exec(text)) !== null) {
+    const date = `${m[3]}-${String(MONTHS.indexOf(m[1]) + 1).padStart(2, "0")}-${m[2].padStart(2, "0")}`;
+    if (!byDate.has(date)) byDate.set(date, parseFloat(m[4]));
   }
   return [...byDate.entries()].map(([date, rate]) => ({ date, rate })).sort((a, b) => a.date.localeCompare(b.date));
 };
 
-// The blob sometimes carries the other product's price on a single day; drop
-// any day more than 3% off the median of the week around it.
-const dropSpikes = (rows) =>
-  rows.filter((r, i) => {
-    const win = rows.slice(Math.max(0, i - 3), i + 4).map((x) => x.rate).sort((a, b) => a - b);
-    const med = win[Math.floor(win.length / 2)];
-    return Math.abs(r.rate - med) / med <= 0.03;
-  });
-
-export const fetchLatestRates = async (fuel, city = "delhi") => {
-  const url = `https://www.bankbazaar.com/fuel/${fuel}-price-${city}.html`;
+export const fetchLatestRates = async (fuel, city = RATES_CITY.slug) => {
+  const url = `https://www.goodreturns.in/${fuel}-price-in-${city}.html`;
   const errors = [];
   for (const proxy of PROXIES) {
     try {
@@ -144,9 +107,9 @@ export const fetchLatestRates = async (fuel, city = "delhi") => {
       if (html.trimStart().startsWith("{")) {
         try { html = JSON.parse(html).contents || html; } catch {}
       }
-      const rows = dropSpikes(parseHistory(html));
+      const rows = parseTable(html);
       if (rows.length) return rows;
-      throw new Error("no price history in page");
+      throw new Error("no price table in page");
     } catch (e) {
       errors.push(`${new URL(proxy(url)).host}: ${e.message}`);
     }

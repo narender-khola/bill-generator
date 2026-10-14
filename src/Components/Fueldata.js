@@ -39,8 +39,8 @@ export { _merged as fuel_data };
 export const petrolFetchedAt = petrolLatest.fetchedAt || null;
 export const petrolCity = petrolLatest.city || null;
 
-// Diesel history (`npm run fetch:petrol -- delhi --fuel diesel`) only covers the
-// last ~6 months.  Earlier dates -- FY mode reaches back to April -- are filled
+// Diesel history (`npm run fetch:petrol -- --fuel diesel`) covers the last
+// ~2 years.  Earlier dates -- FY mode can reach back further -- are filled
 // from the petrol series scaled by the diesel/petrol ratio seen where both
 // exist, so the rate still moves day to day the way the pump price did.
 const _diesel = (() => {

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "./FuelRates.css";
 import { getFuelSeries } from "./Fueldata";
-import { fetchLatestRates, saveFetched, getFetchedAt, getEdits, saveMonthEdits, clearMonthEdits } from "../utils/fuelRates";
+import { RATES_CITY, fetchLatestRates, saveFetched, getFetchedAt, getEdits, saveMonthEdits, clearMonthEdits } from "../utils/fuelRates";
 
 const FUELS = [
   { id: "petrol", label: "Petrol" },
@@ -119,7 +119,7 @@ export default class FuelRates extends Component {
 
   fetchLatest = async () => {
     const { fuel } = this.state;
-    this.setState({ fetching: true, status: { kind: "info", text: "Fetching from bankbazaar…" } });
+    this.setState({ fetching: true, status: { kind: "info", text: `Fetching ${RATES_CITY.label} rates from goodreturns…` } });
     try {
       const rows = await fetchLatestRates(fuel);
       saveFetched(fuel, rows);
@@ -187,7 +187,7 @@ export default class FuelRates extends Component {
       <div className="bg-card">
         <h2 className="bg-card-title">Fuel Rates</h2>
         <p className="bg-card-desc">
-          Daily Delhi pump prices used by the Fuel Bill generator. Fetch the latest, or correct a month by hand and submit it.
+          Daily {RATES_CITY.label} pump prices used by the Fuel Bill generator. Fetch the latest, or correct a month by hand and submit it.
         </p>
 
         <div className="bg-mode-row">
@@ -314,7 +314,7 @@ export default class FuelRates extends Component {
         <div className="bg-tips">
           <div className="bg-tips-title">How it works</div>
           <div>Fetched and edited rates are saved in this browser only and override the rates built into the site. Edits win over fetched rates.</div>
-          <div>Fetching goes through a free public proxy because bankbazaar blocks direct browser requests, so it can fail now and then; just retry.</div>
+          <div>Fetch reads the last 10 days from goodreturns through a free public proxy (the site blocks direct browser requests), so it can fail now and then; just retry. Older days come built into the site.</div>
           <div>
             <button type="button" className="fr-link" onClick={this.exportEdits}>Export your edits as JSON</button> to keep a copy.
           </div>
