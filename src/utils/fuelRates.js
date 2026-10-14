@@ -96,6 +96,16 @@ const parseTable = (html) => {
   return [...byDate.entries()].map(([date, rate]) => ({ date, rate })).sort((a, b) => a.date.localeCompare(b.date));
 };
 
+// goodreturns sometimes reports another company's pump for a single day, then
+// falls back to the exact previous price; a day that differs from both
+// neighbours while they agree takes their price (same as fetch-petrol.js).
+const smoothBlips = (rows) =>
+  rows.map((r, i) => {
+    const prev = rows[i - 1];
+    const next = rows[i + 1];
+    return prev && next && prev.rate === next.rate && r.rate !== prev.rate ? { date: r.date, rate: prev.rate } : r;
+  });
+
 export const fetchLatestRates = async (fuel) => {
   const url = `https://www.goodreturns.in/${fuel}-price-in-${RATES_CITY.slug}.html`;
   const errors = [];
@@ -109,7 +119,7 @@ export const fetchLatestRates = async (fuel) => {
         try { html = JSON.parse(html).contents || html; } catch {}
       }
       const rows = parseTable(html);
-      if (rows.length) return rows;
+      if (rows.length) return smoothBlips(rows);
       throw new Error("no price table in page");
     } catch (e) {
       errors.push(`${new URL(proxy(url)).host}: ${e.message}`);

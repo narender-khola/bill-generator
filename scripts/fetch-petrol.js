@@ -96,6 +96,24 @@ function dropSpikes(rows) {
   });
 }
 
+// goodreturns sometimes reports another company's pump for a single day
+// (petrol and diesel both jump ~Rs 0.30 on the same day, then fall back to the
+// exact previous price).  Pump prices don't move like that, so a day that
+// differs from both neighbours while they agree takes the neighbours' price.
+function smoothBlips(rows) {
+  let fixed = 0;
+  const out = rows.map((r, i) => {
+    const prev = rows[i - 1];
+    const next = rows[i + 1];
+    if (prev && next && prev.rate === next.rate && r.rate !== prev.rate) {
+      fixed += 1;
+      return { date: r.date, rate: prev.rate };
+    }
+    return r;
+  });
+  return { rows: out, fixed };
+}
+
 function parseArgs(argv) {
   const opts = { fuel: "petrol", timeframe: "2Y", from: null, to: null, replace: false };
   for (let i = 0; i < argv.length; i += 1) {
@@ -142,6 +160,9 @@ async function main() {
   const parsed = rows.length;
   rows = dropSpikes(rows);
   if (rows.length < parsed) console.log(`Dropped ${parsed - rows.length} stray-price day(s)`);
+  const smoothed = smoothBlips(rows);
+  rows = smoothed.rows;
+  if (smoothed.fixed) console.log(`Smoothed ${smoothed.fixed} one-day blip(s)`);
 
   const available = rows.length ? `${rows[0].date} → ${rows[rows.length - 1].date}` : "none";
   if (from) rows = rows.filter((r) => r.date >= from);
