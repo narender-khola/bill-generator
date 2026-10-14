@@ -33,3 +33,6 @@ public/images/IMG_*.jpeg
 
 # Built by `npm run bundle:mac` (runs on predeploy) from print58.sh + mac/.
 public/downloads/
+
+# Local Print58 builds (mac/build-app.sh mac/dist); the published copy lives in public/downloads.
+/mac/dist

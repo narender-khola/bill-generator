@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" width="160" height="160">
+  <!-- Outer border box -->
+  <rect x="3" y="3" width="154" height="154" rx="8" ry="8" fill="#ffffff" stroke="#000000" stroke-width="3" />
+  
+  <!-- Swirl Symbol Group -->
+  <g transform="translate(80, 58)">
+    <!-- Outer filled circle -->
+    <circle cx="0" cy="0" r="38" fill="#000000" />
+    <!-- White ring -->
+    <circle cx="0" cy="0" r="31" fill="none" stroke="#ffffff" stroke-width="5" />
+    <!-- Center disk background -->
+    <circle cx="0" cy="0" r="26" fill="#000000" />
+    
+    <!-- Yin-yang / Flame swirl drops (White with black/white separation) -->
+    <!-- Left droplet -->
+    <path d="M 0 -22 C -13 -22 -22 -11 -22 0 C -22 10 -14 18 -4 20 C -2 15 -1 10 1 5 C 3 0 5 -5 5 -11 C 5 -17 2 -21 0 -22 Z" fill="#ffffff" />
+    <!-- Right droplet -->
+    <path d="M 0 22 C 13 22 22 11 22 0 C 22 -10 14 -18 4 -20 C 2 -15 1 -10 -1 -5 C -3 0 -5 5 -5 11 C -5 17 -2 21 0 22 Z" fill="#ffffff" />
+    <!-- Center S curve separator in black -->
+    <path d="M 0 -22 C 3 -16 5 -10 5 -4 C 5 5 0 12 -5 15 C -2 19 0 21 0 22 C -3 16 -5 10 -5 4 C -5 -5 0 -12 5 -15 C 2 -19 0 -21 0 -22 Z" fill="#000000" />
+  </g>
+  
+  <!-- Bharat Petroleum text -->
+  <text x="80" y="122" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="20" text-anchor="middle" fill="#000000" letter-spacing="0.5">Bharat</text>
+  <text x="80" y="145" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="20" text-anchor="middle" fill="#000000" letter-spacing="0.5">Petroleum</text>
+</svg>
