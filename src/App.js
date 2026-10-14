@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./App.css";
 import "./app-shell.css";
 import FuelBill from "./Components/FuelBill";
+import FuelRates from "./Components/FuelRates";
 import FiberBill from "./Components/FiberBill";
 import AirtelBlackBill from "./Components/AirtelBlackBill";
 import DriverSalary from "./Components/DriverSalary";
@@ -24,7 +25,15 @@ if (TRACKING_ID) {
 // Top-level tabs.  A tab with `options` groups several generators and shows
 // a switcher above the form to pick between them.
 const GENERATORS = [
-  { id: "fuel", label: "Fuel Bill", component: FuelBill, available: true },
+  {
+    id: "fuel",
+    label: "Fuel Bill",
+    available: true,
+    options: [
+      { id: "fuel-bills", label: "Bills", component: FuelBill },
+      { id: "fuel-rates", label: "Rates", component: FuelRates },
+    ],
+  },
   {
     id: "fiber",
     label: "Fiber Bill",

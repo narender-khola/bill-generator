@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import "./FuelBill.css";
-import { fuel_data, diesel_data } from "./Fueldata";
+import { getFuelSeries } from "./Fueldata";
 import ReactGA from 'react-ga4';
 import { getHistory, addToHistory } from "../utils/inputHistory";
 import html2canvas from "html2canvas";
@@ -38,8 +38,8 @@ const _todayStr = () => {
 // Per-fuel product details.  Density bands are what the dispensers print:
 // petrol ~745-751 kg/m3, diesel ~826-836 kg/m3.
 const FUELS = {
-  petrol: { label: "Petrol", product: "PETROL", data: fuel_data, bpcl: [746.0, 5.0], ioc: [745, 2] },
-  diesel: { label: "Diesel", product: "DIESEL", data: diesel_data, bpcl: [828.0, 8.0], ioc: [826, 6] },
+  petrol: { label: "Petrol", product: "PETROL", get data() { return getFuelSeries("petrol"); }, bpcl: [746.0, 5.0], ioc: [745, 2] },
+  diesel: { label: "Diesel", product: "DIESEL", get data() { return getFuelSeries("diesel"); }, bpcl: [828.0, 8.0], ioc: [826, 6] },
 };
 const FUEL_STORAGE_KEY = "fuel_bill_fuel_type";
 const _loadFuelType = () => {
