@@ -312,6 +312,9 @@
 @page airtel { size: A4 portrait; margin: 0; }
 
 @media print {
+  /* Bootstrap's print CSS (bundled via FuelBill.css) sets body min-width
+     992px, which makes Chrome shrink the whole A4 page to ~80%. */
+  body:has(.ab-page), body:has(.ab-page) .container { min-width: 0 !important; }
   .ab-page { page: airtel; width: 189.4mm; outline: 0; margin: 0; zoom: 1.1082; }
   .ab-page, .ab-page * {
     -webkit-print-color-adjust: exact;
