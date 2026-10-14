@@ -1,16 +1,17 @@
 #!/usr/bin/env node
-// Fetches daily fuel price history for a city from goodreturns.in and writes
+// Fetches daily Gurugram fuel price history from goodreturns.in and writes
 // JSON to src/Components/petrol-latest.json.
 //
-// Usage: node scripts/fetch-petrol.js [city] [--fuel petrol|diesel] [--timeframe 1Y]
+// Usage: node scripts/fetch-petrol.js [--fuel petrol|diesel] [--timeframe 2Y]
 //                                     [--from YYYY-MM-DD] [--to YYYY-MM-DD] [--replace]
 //
 // --fuel diesel writes src/Components/diesel-latest.json instead.  New days are
 // merged into the existing file (its rows win); --replace overwrites it.
 //
-// Default city = gurgaon (Gurugram), following goodreturns URL slugs
-// (petrol-price-in-<city>.html).  bankbazaar was dropped: its Gurgaon page
-// has carried Delhi's price since mid-2026.
+// Gurugram only: every pump the Fuel Bill generator prints is in Gurugram, so
+// another city's rates would put the wrong price on the receipts.  bankbazaar
+// was dropped because its Gurgaon page has carried Delhi's price since mid-2026.
+const CITY = "gurgaon"; // goodreturns slug: petrol-price-in-gurgaon.html
 //
 // The page's price chart loads daily rates from /fuel-graph-data.html with a
 // short-lived token from /src/get_api_token.php, which is only issued to
@@ -96,17 +97,15 @@ function dropSpikes(rows) {
 }
 
 function parseArgs(argv) {
-  const opts = { city: "gurgaon", fuel: "petrol", timeframe: "2Y", from: null, to: null, replace: false };
-  const rest = [];
+  const opts = { fuel: "petrol", timeframe: "2Y", from: null, to: null, replace: false };
   for (let i = 0; i < argv.length; i += 1) {
     if (argv[i] === "--from") opts.from = argv[++i];
     else if (argv[i] === "--to") opts.to = argv[++i];
     else if (argv[i] === "--replace") opts.replace = true;
     else if (argv[i] === "--fuel") opts.fuel = String(argv[++i] || "").toLowerCase();
     else if (argv[i] === "--timeframe") opts.timeframe = String(argv[++i] || "").toUpperCase();
-    else rest.push(argv[i]);
+    else throw new Error(`Unknown argument "${argv[i]}"`);
   }
-  if (rest[0]) opts.city = rest[0].toLowerCase();
   if (!["petrol", "diesel"].includes(opts.fuel)) {
     throw new Error(`--fuel must be petrol or diesel, got "${opts.fuel}"`);
   }
@@ -122,7 +121,8 @@ function parseArgs(argv) {
 }
 
 async function main() {
-  const { city, fuel, timeframe, from, to, replace } = parseArgs(process.argv.slice(2));
+  const { fuel, timeframe, from, to, replace } = parseArgs(process.argv.slice(2));
+  const city = CITY;
   const url = `https://www.goodreturns.in/${fuel}-price-in-${city}.html`;
   console.log(`Fetching ${fuel} for ${city} from goodreturns (${timeframe})`);
 

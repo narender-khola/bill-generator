@@ -78,6 +78,7 @@ const PROXIES = [
   (u) => `https://everyorigin.jwvbremen.nl/api/get?url=${encodeURIComponent(u)}`,
 ];
 
+// Gurugram only: every pump the Fuel Bill generator prints is in Gurugram.
 export const RATES_CITY = { slug: "gurgaon", label: "Gurugram" };
 
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -95,8 +96,8 @@ const parseTable = (html) => {
   return [...byDate.entries()].map(([date, rate]) => ({ date, rate })).sort((a, b) => a.date.localeCompare(b.date));
 };
 
-export const fetchLatestRates = async (fuel, city = RATES_CITY.slug) => {
-  const url = `https://www.goodreturns.in/${fuel}-price-in-${city}.html`;
+export const fetchLatestRates = async (fuel) => {
+  const url = `https://www.goodreturns.in/${fuel}-price-in-${RATES_CITY.slug}.html`;
   const errors = [];
   for (const proxy of PROXIES) {
     try {
