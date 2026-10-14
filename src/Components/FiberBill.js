@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./FiberBill.css";
 import ReactGA from "react-ga4";
 import { getHistory, saveAll } from "../utils/inputHistory";
+import { downloadClaimCsv, claimDate } from "../utils/claimCsv";
 
 const MONTHS_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -42,6 +43,7 @@ const buildBill = ({ customerName, accountNumber, dslNumber, amount, year, month
     dslNumber,
     amount,
     amountFormatted: `Rs.${amount.toFixed(2)}`,
+    date: new Date(year, month0, day),
     dateStr,
     time,
     receiptNumber,
@@ -174,6 +176,15 @@ export default class FiberBill extends Component {
     }
   };
 
+  downloadCsv = () => {
+    downloadClaimCsv(this.state.bills.map((b) => ({
+      billNumber: b.receiptNumber,
+      billDated: claimDate(b.date),
+      billAmount: b.amount,
+      info: "",
+    })));
+  };
+
   render() {
     const { mode, customerName, accountNumber, dslNumber, amount, month, endMonthSingle, fyStartYear, endMonth, bills, pdfView } = this.state;
 
@@ -186,9 +197,14 @@ export default class FiberBill extends Component {
               <span className="bg-result-stat">Bills: <strong>{bills.length}</strong></span>
               <span className="bg-result-stat">Total: <strong>Rs.{total.toFixed(2)}</strong></span>
             </div>
-            <button onClick={() => window.location.reload()} type="button" className="bg-btn bg-btn-primary">
-              Generate More
-            </button>
+            <div className="bg-result-actions">
+              <button onClick={this.downloadCsv} type="button" className="bg-btn bg-btn-secondary">
+                Download CSV
+              </button>
+              <button onClick={() => window.location.reload()} type="button" className="bg-btn bg-btn-primary">
+                Generate More
+              </button>
+            </div>
           </div>
           {bills.map((b, idx) => (
             <div key={idx} className="fb-bill">

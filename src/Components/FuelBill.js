@@ -5,6 +5,7 @@ import ReactGA from 'react-ga4';
 import { getHistory, addToHistory } from "../utils/inputHistory";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
+import { downloadClaimCsv, claimDate } from "../utils/claimCsv";
 
 // 58mm thermal roll, printed at the head's native 203dpi.  Rendering at exactly
 // one canvas pixel per printer dot is what keeps the 1-bit pass below meaningful:
@@ -728,6 +729,22 @@ export default class FuelBill extends Component {
   // Print straight from the browser -- no PDF round-trip.  The @page rule in
   // the print grid below sizes the sheet to the roll; the receipts already
   // carry page-break-after, so each one lands on its own slip.
+  // Same number each receipt prints in its "Receipt No" / "Rcpt No" / "Bill No" row.
+  _receiptNumber = (bill) => {
+    if (bill.fuel_station_name === "Bharat Petroleum BPCL") return `H${String(bill.txn_id).slice(-4)}`;
+    if (bill.fuel_station_name === "Hindustan Petroleum (HP)") return `HP${String(bill.txn_id).slice(-4)}`;
+    return `${bill.txn_id}-ORGNL`;
+  };
+
+  handleDownloadCsv = () => {
+    downloadClaimCsv(this.state.bills.map((bill) => ({
+      billNumber: this._receiptNumber(bill),
+      billDated: claimDate(new Date(bill.date)),
+      billAmount: bill.amount,
+      info: "",
+    })));
+  };
+
   handlePrint58 = () => {
     if (document.querySelectorAll('.thermal-58mm').length === 0) return;
     window.print();
@@ -1005,6 +1022,9 @@ export default class FuelBill extends Component {
                 </button>
                 <button onClick={this.handleDownloadMultiplePDFs} type="button" className="bg-btn bg-btn-secondary">
                   PDF per bill
+                </button>
+                <button onClick={this.handleDownloadCsv} type="button" className="bg-btn bg-btn-secondary">
+                  Download CSV
                 </button>
                 <button onClick={this.handlePrint58} type="button" className="bg-btn bg-btn-primary">
                   Print 58mm

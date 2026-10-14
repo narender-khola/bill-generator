@@ -1,5 +1,6 @@
 import React, { Component, useEffect, useRef } from "react";
 import "./AirtelBlackBill.css";
+import { downloadClaimCsv } from "../utils/claimCsv";
 import ReactGA from "react-ga4";
 import JsBarcode from "jsbarcode";
 import { QRCodeSVG } from "qrcode.react";
@@ -139,6 +140,7 @@ const buildBill = (f, year, month0, actual = {}) => {
   return {
     ...f,
     stmtDate: dmy(stmt),
+    stmtSlash: slash(stmt),
     stmtDate2: dmy2(stmt),
     periodDash: `${dmy(from)} - ${dmy(to)}`,
     periodTo: `${dmy(from)} to ${dmy(to)}`,
@@ -601,6 +603,16 @@ export default class AirtelBlackBill extends Component {
     </div>
   );
 
+  downloadCsv = () => {
+    const { bills, includeBlack } = this.state;
+    downloadClaimCsv(bills.map((b) => ({
+      billNumber: b.billNo,
+      billDated: b.stmtSlash,
+      billAmount: includeBlack ? b.blackTotal : b.flTotal,
+      info: "",
+    })));
+  };
+
   render() {
     const { mode, address, includeBlack, month, endMonthSingle, billDate, fyStartYear, endMonth, bills, pdfView } = this.state;
 
@@ -613,9 +625,14 @@ export default class AirtelBlackBill extends Component {
               <span className="bg-result-stat">Bills: <strong>{bills.length}</strong></span>
               <span className="bg-result-stat">Total: <strong>Rs.{total.toFixed(2)}</strong></span>
             </div>
-            <button onClick={() => window.location.reload()} type="button" className="bg-btn bg-btn-primary">
-              Generate More
-            </button>
+            <div className="bg-result-actions">
+              <button onClick={this.downloadCsv} type="button" className="bg-btn bg-btn-secondary">
+                Download CSV
+              </button>
+              <button onClick={() => window.location.reload()} type="button" className="bg-btn bg-btn-primary">
+                Generate More
+              </button>
+            </div>
           </div>
           {bills.map((b, idx) => (
             <React.Fragment key={idx}>
